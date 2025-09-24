@@ -1,0 +1,14 @@
+struct Sentence
+{
+    Character character;
+    int charState;
+    String sentence;
+    int tic;
+}
+
+Class Page play 
+{
+    CharacterStage stage;
+    TextureID cg;
+    Sentence sentence;
+}

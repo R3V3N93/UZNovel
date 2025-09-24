@@ -1,0 +1,65 @@
+{
+
+"Characters":
+[
+    {
+        "Codename" : "Durante",
+        "Name" : "Dante",
+        "Graphics" :
+        [
+            "Graphics/Example/Dante.png"
+        ]
+    },
+    {
+        "Codename" : "UlfAnderson",
+        "Name" : "Wolf",
+        "Graphics" :
+        [
+            "Graphics/Example/Wolf.png"
+        ]
+    },
+    {
+        "Codename" : "LionelMessi",
+        "Name" : "Lion",
+        "Graphics" :
+        [
+            "Graphics/Example/Lion.png"
+        ]
+    },
+    {
+        "Codename" : "Chadwick",
+        "Name" : "Panther",
+        "Graphics" :
+        [
+            "Graphics/Example/Panther.png"
+        ]
+    },
+    {
+        "Codename" : "VeryMouse",
+        "Name" : "Faust",
+        "Graphics" :
+        [
+            "Graphics/Example/Faust.png",
+            "Graphics/Example/Faust_Goofy.png"
+        ] 
+    }
+],
+
+"Book":
+[
+    {
+        "Name":"limbussy",
+        "Pages":
+        [
+            {
+                "bg":"black.png",
+                ""
+            },
+            {
+                "Text" : "",
+            }
+        ]
+    }
+]
+
+}

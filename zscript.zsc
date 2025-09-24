@@ -1,0 +1,9 @@
+version "4.14.0"
+
+#include "zscript/lib/ZJSON/Include.zs"
+#include "zscript/lib/debug.zsc"
+
+#include "zscript/GZNovel/Handler.zsc"
+#include "zscript/GZNovel/Characters.zsc"
+#include "zscript/GZNovel/Page.zsc"
+#include "zscript/GZNovel/Book.zsc"

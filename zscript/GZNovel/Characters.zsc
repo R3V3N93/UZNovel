@@ -1,0 +1,31 @@
+class Character play
+{
+    Array<TextureID> graphics;
+    String codeName;
+    String name;
+    double pos;
+
+    static Character Create(stirng codeName, string name, Array<TextureID> graphics)
+    {
+        Character char = new('Character');
+        char.codeName = codeName;
+        char.name = name;
+        char.graphics.Move(graphics);
+        return char;
+    }
+}
+
+Class CharacterStage play
+{
+    Array<Character> characters;
+
+    Character FindCharacter(string name)
+    {
+        foreach(a : characters)
+        {
+            if(a.name == name)
+                return a; // it should return pointers..?
+        }
+        return null;
+    }
+}

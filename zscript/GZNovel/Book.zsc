@@ -1,0 +1,4 @@
+Class Book play
+{
+    Array<Page> pages;
+}

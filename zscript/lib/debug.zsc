@@ -1,0 +1,185 @@
+struct Debug
+{
+    //stolen from fused XDDDDDDDDDDD
+    static string LogSeverity(int severity)
+    {
+        //1 == DEBUG
+        //2 == ERROR
+        //3 == WARNING
+        if(severity > 3 || severity < 1)
+        {
+            LogError("invalid severity "..severity, "LogSeverity");
+        }
+        return (severity == 1 ? "\cd[DEBUG]\c-" : (severity == 2 ? "\cg[ERROR]\c-" : "\ci[WARNING]\c-"));
+    }
+
+    static void LogMessage(string msg, int severity, string name)
+    {
+        //if(Cvar.GetCvar("cl_debug", players[ConsolePlayer]).GetBool() == true)
+            console.printf(LogSeverity(severity).." "..name.." : "..msg);
+    }
+
+    static void LogDebug(string msg, string name = "")
+    {
+        LogMessage(msg, 1, name);
+    }
+
+    static void LogError(string msg, string name = "")
+    {
+        LogMessage(msg, 2, name);
+    }
+
+    static void LogWarning(string msg, string name = "")
+    {
+        LogMessage(msg, 3, name);
+    }
+
+    static void addInfoCategory(string name)
+    {
+        Eventhandler.SendInterfaceEvent(ConsolePlayer, String.format("addInfoCategory|%s", name));   
+    }
+
+    static void addInfoItem(string msg, string category, string tag = "")
+    {
+        Eventhandler.SendInterfaceEvent(ConsolePlayer, String.format("addInfoItem|%s|%s|%s", msg, category, tag));   
+    }
+
+    static void Throw(string msg)
+	{
+		object.ThrowAbortException(msg);
+	}
+}
+
+class DebugInfoItem ui
+{
+    string category;
+    Array<string> message;
+    Array<string> tag;
+}
+
+Class DebugInfo : EventHandler
+{
+    ui Array<DebugInfoItem> debugitems;
+    protected font calibri;
+
+    override void OnRegister()
+    { 
+        calibri = Font.GetFont("calibri"); 
+    }
+    override void WorldTick()
+    {
+        debug.addInfoCategory("Test");
+        debug.addInfoItem("message with tag", "Test", "tag");
+        debug.addInfoItem("message without tag", "Test");
+        debug.addInfoCategory("AnotherTest");
+        debug.addInfoItem("message with tag", "AnotherTest", "tag");
+        debug.addInfoItem("message without tag", "AnotherTest");
+    }
+
+    enum BasicInfo
+    {
+        CONST_TEXT_H = 12,
+        CONST_TEXT_GAP_FROM_LOG = 80
+    };
+
+
+    override void UITick()
+    {  
+        debugitems.clear();
+    }
+
+    override void RenderOverlay (RenderEvent event) 
+    {
+        int y = CONST_TEXT_GAP_FROM_LOG;
+
+        foreach(item : debugitems)
+        {
+            DrawDebugInfoItem(item.category, y);
+            y += (CONST_TEXT_H * 2); // One line worth gap
+
+            foreach(msg : item.message)
+            {
+                DrawDebugInfoItem(msg, y);
+                y += CONST_TEXT_H;
+            }
+            y += CONST_TEXT_H;
+        }
+    }
+
+    ui int findCategory(string what)
+    {
+        for(int i = 0; i < debugitems.size(); i++)
+        {
+            if(debugitems[i].category == what)
+            {
+                return i;
+            }
+        }
+        return debugitems.size();
+    }
+
+    override void InterfaceProcess(ConsoleEvent e)
+    {
+        Array<string> args;
+        e.name.split(args, "|");  
+        
+        if(args[0] == "addInfoCategory")
+        {
+            if(args.size() > 2)
+                debug.LogError("Invalid debug category name \""..e.name.."\"! The name shall not contain |", self.GetClassName());
+            else
+            {
+                if(findCategory(args[1]) == debugitems.size())
+                {
+                    DebugInfoItem temp = new('DebugInfoItem');
+                    temp.category = args[1];
+                    debugitems.push(temp);
+                }
+            }
+        }
+
+        if(args[0] == "addInfoItem")
+        {
+            if(args.size() > 4)
+                debug.LogError("Invalid debug info item name \""..e.name.."\"! The name shall not contain |", self.GetClassName());
+            else
+            {
+                int index = findCategory(args[2]);
+                if(index != debugitems.size())
+                {
+                    if(debugitems[index].tag.find(args[3]) == debugitems[index].tag.size())
+                    {
+                        debugitems[index].message.push(args[1]);
+                        if(args[3] == "")
+                            debugitems[index].tag.push(args[3]);
+                        else
+                            debugitems[index].tag.push(args[1]);
+                    }
+                }
+                else
+                    debug.LogError("category name \""..args[2].."\" does not exist!", self.GetClassName());
+            }
+        }
+    }
+
+    
+
+    //////////////////////////////////////////////
+    ////// Private Methods
+    /////////////////////////////////////////////
+
+    //msg : includes message to show
+    //y : y coordinate to show the message at. make sure it's between 0 ~ 1080.
+    ui private bool DrawDebugInfoItem(string msg, int y)
+    {
+        if(y < 0 || y > 1080)
+        {
+            debug.LogError("DrawDebugInfoItem : input parameter y("..y..") is inbetween 0~1080.", "DrawDebugInfoItem");
+            return false;
+        }
+        Screen.DrawThickLine(0, y + CONST_TEXT_H / 2, 8 * msg.length(), y + CONST_TEXT_H / 2, CONST_TEXT_H, Font.CR_BLACK, 125);
+        Screen.DrawText(calibri, Font.CR_WHITE, 0, y, msg, DTA_ScaleX, 0.25, DTA_ScaleY, 0.25);
+        return true;
+    }
+}
+

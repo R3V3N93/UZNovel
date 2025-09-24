@@ -1,0 +1,77 @@
+{
+
+// Getting ``Comments are not permitted in JSON.`` Error?
+// It's totally fine. it's not even for practical use anyway, but format demonstration.
+
+"Characters":
+[
+    {
+        "Codename": 
+        "Codenames are names used to identify characters in code wise. (e.g., 'Name' parametre of 'Character' block within 'Pages', FindCharacter() and so on.",
+        "Name": 
+        "Name is what is displayed in game. This can be further overriden in 'Name' parametre of 'Character' block. Example's below.",
+        "Graphics":
+        [
+            "Self explanatory. But, why array? Simple. You can define various states(such as, emotions, corpses, etc)",
+            "For example, This line can be this character's angry sprite",
+            "And this line can be this character's dead sprite"
+        ]
+    }
+],
+
+"Books":
+[
+    {
+        "Name": "Book's name.",
+        "Pages":
+        [
+            {
+                "BG": "Background image",
+                "Music": "Music.",
+                "Characters":
+                [
+                    {
+                        "Codename": "Char1",
+                        "Name": "???",// This will override the default name.
+                        "State": 0
+                        // state refers to the index at 'Graphics' of this character.
+                        // To bring the example above, state 1 will point
+                        // "For example, This line can be this character's angry sprite" line
+                    },
+                    {
+                        "Codename": "Char2",
+                        "State": 0
+                    }
+                ],
+                "Highlight": // This block will highlight characters with given codenames.
+                [ 
+                    "__NULL__" // __NULL__ is internal 
+                ]
+            },
+
+            {
+                "Speaker": "Char1",
+                "Text": "The great speech to be told",
+                "Time": 69, 
+                "Highlight": ["Char1"],
+                "Characters":
+                [
+                    {
+                        "Codename": "Char1",
+                        "State": 1
+                    }
+                ]
+            },
+            {
+                "CG":""
+            },
+            {
+                "Text": "",
+                "Time": 74,
+                "Highlight": ["__ALL__"]
+            }
+        ]
+    }
+]
+
+}

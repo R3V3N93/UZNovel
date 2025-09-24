@@ -1,0 +1,70 @@
+Class GZNovelHandler : StaticEventHandler
+{
+    Book curBook;
+    int curPage;.
+    Array<Character> characters;
+    Array<Book> books;
+    private Book _ErrorBook;
+
+    override void OnRegister()
+    {
+    }
+
+    private string JSON_GetString(JsonObject obj, string key, bool necessary = false;)
+    {
+        JsonElement element = obj.get(key);
+        if(!element && necessary)
+           Debug.Throw("JSON_GetString(): property \cf"..key.."\c- is not found from given object");
+
+        JsonString str = JsonString(str);
+        if(!str)
+            Debug.Throw("JSON_GetString(): property \cf"..key.."\c- is not string.");
+
+        return str.Serialize();
+    }
+
+    static void LoadCharacter(string fileName) 
+    {
+        int lump = Wads.FindLump(fileName);
+        if(lump == -1)
+        {
+            Debug.LogWarning("LoadCharacters() : Could not load json named \cf"..fileName);
+            return;
+        }
+
+        JsonElementOrError data = JSON.parse(Wads.ReadLump(lump),false);
+		if(data is "JsonError")
+        {
+			Debug.Throw("LoadCharacters(): "..JsonError(data).what);
+		}
+
+        // Deserialize
+        JsonObject obj = JsonObject(JsonElement(data));
+
+        JsonElement charArrElm = obj.get("Characters");
+        if(!charArrElm)
+        {
+            JsonElement ThisMFmisspelledCharactersFfs = obj.get("Character"); 
+            Debug.Throw("LoadCharacters(): Could not find array \cfCharacters\c-."..(ThisMFmisspelledCharactersFfs ? "\nIntead, \cfCharacter\c- is found. Did you forget to \cfwrite extra s?\c-" : ""));
+        }
+        JsonArray charArr = JsonArr(charArrElm);
+
+        if(!charArr)
+            Debug.Throw("LoadCharacters(): Element \cfCharacters\c- is found but it is not \cfArray\c-, but "..charArrElm.GetClassName());
+        
+        for(int i = 0; i < charArr.size(); i++)
+        {
+            JsonElement item = charArr.get(i);
+            JsonObject charObj = JsonObject(item);
+            // Necessary properties
+            string codeName = JSON_GetString(charObj, "Codename", true);
+            string name = JSON_GetString(charObj, "Name", true);
+            JsonArray graphicsArr = JsonArray(charObj.get("Graphics"));
+            
+            Array<TextureID> graphics;
+        }
+    } 
+    static void StartBook(Book what) {}
+    static void GoNextPage() {}
+    static void EndBook() {}
+}
