@@ -8,9 +8,21 @@
             "type": "shell",
             "args": [
                 "-file",
-                "\"${workspaceFolder}\""
+                "\"${workspaceFolder}\"",
+                "+logfile \"${workspaceFolder}\\log\\log.txt\"",
             ],
             "command": "\"D:\\game\\VKDoom\\vkdoom.exe\" ",
+            "problemMatcher": []
+        },
+        {
+            "label": "Run VKDOOM Laptop",
+            "type": "shell",
+            "args": [
+                "-file",
+                "\"${workspaceFolder}\"",
+                "+logfile \"${workspaceFolder}\\log\\log.txt\"",
+            ],
+            "command": "\"C:\\VKDoom\\vkdoom.exe\" ",
             "problemMatcher": []
         }
     ]

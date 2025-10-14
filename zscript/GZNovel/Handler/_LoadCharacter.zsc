@@ -1,0 +1,76 @@
+extend class GZNovelHandler
+{
+    void LoadCharacters(string fileName) 
+    {
+        // Obtain the file
+
+        int lump = Wads.CheckNumForFullName(fileName);
+        if(lump == -1)
+        {
+            Debug.LogWarning("LoadCharacters() : Could not load json named \cf"..fileName);
+            return;
+        }
+
+        JsonElementOrError data = JSON.parse(Wads.ReadLump(lump),false);
+		if(data is "JsonError")
+        {
+			Debug.Throw("LoadCharacters(): "..JsonError(data).what);
+		}
+
+        // Deserialize
+
+        JsonObject obj = JsonObject(JsonElement(data));
+
+        JsonElement charArrElm = obj.get("Characters");
+        if(!charArrElm)
+        {
+            JsonElement ThisMFmisspelledCharactersFfs = obj.get("Character"); 
+            Debug.Throw("LoadCharacters(): Could not find array \cfCharacters\c-."..(ThisMFmisspelledCharactersFfs ? "\nIntead, \cfCharacter\c- is found. Did you forget to \cfwrite extra s?\c-" : ""));
+        }
+        JsonArray charArr = JsonArray(charArrElm);
+
+        if(!charArr)
+            Debug.Throw("LoadCharacters(): Element \cfCharacters\c- is found but it is not \cfArray\c-, but "..charArrElm.GetClassName());
+        
+        // Obtain properties from each item
+        for(uint i = 0; i < charArr.size(); i++)
+        {
+            JsonElement item = charArr.get(i);
+            JsonObject charObj = JsonObject(item);
+
+            JsonString codeNameJson = JsonString(charObj.get("Codename"));
+            JsonString nameJson = JsonString(charObj.get("Name"));
+            JsonArray graphicsArr = JsonArray(charObj.get("Graphics"));
+
+            if(!codeNameJson)
+                Debug.Throw("LoadCharacters(): At Character "..(i+1).." : Property \cfCodename\c- is not present, or type is not \cfstring\c-");
+            if(!nameJson)
+                Debug.Throw("LoadCharacters(): At Character "..(i+1).." : Property \cfName\c- is not present, or type is not \cfstring\c-");
+            if(!graphicsArr)
+                Debug.Throw("LoadCharacters(): At Character "..(i+1).." : Property \cfGraphics\c- is not present, or type is not \cfarray\c-");
+
+            Array<TextureID> graphics;
+
+            for(uint j = 0; j < graphicsArr.Size(); j++)
+            {
+                JsonString nameJson = JsonString(graphicsArr.get(j));
+                if(!nameJson)
+                    Debug.Throw("LoadCharacters(): At Character "..(i+1).." : Property \cfGraphics\c-'s item "..(j+1).."'s type is not \cfstring\c-");
+                TextureID tex = Texman.CheckForTexture(nameJson.s);
+
+                if(tex.IsValid() == false)
+                    Debug.LogWarning("LoadCharacters(): At Character "..(i+1).." : Property \cfGraphics\c-'s item "..(j+1).." is not valid. Make sure you input correct directory or the graphic's file is there");
+
+                graphics.Push(tex);
+            }
+            string codeName = codeNameJson.s;
+            string name = nameJson.s;
+
+            Character result = Character.Create(codeName, name, graphics);
+
+            Debug.LogDebug("LoadCharacters(): From \cf"..fileName.."\c-\n   Loaded character:\n     "..result.Serialize());
+
+            characters.Push(result);
+        }
+    }
+}

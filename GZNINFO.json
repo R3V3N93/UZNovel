@@ -1,0 +1,12 @@
+{
+    "GZNovel":
+    {
+        "VirtualResolution":[1920, 1080],
+        "DialogueBG":"Graphics/dialogueBG.png",
+        "DialogueTextBox" : [[0.05, 0.78], [0.95, 1.0]],
+        "Font":"calibri",
+        "SpeakerPosition":[0.5, 0.825],
+        "DialogueTextSize":0.5,
+        "SpeakerTextSize":1.5
+    }
+}

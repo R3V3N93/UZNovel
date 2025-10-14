@@ -1,0 +1,178 @@
+extend class GZNovelHandler
+{
+    void LoadBooks(string fileName) 
+    {
+        int lump = Wads.CheckNumForFullName(fileName);
+        if(lump == -1)
+        {
+            Debug.LogWarning("LoadBooks() : Could not load json named \cf"..fileName);
+            return;
+        }
+
+        JsonElementOrError data = JSON.parse(Wads.ReadLump(lump),false);
+		if(data is "JsonError")
+        {
+			Debug.Throw("LoadBooks(): "..JsonError(data).what);
+		}
+
+        // Deserialize
+        JsonObject obj = JsonObject(JsonElement(data));
+
+        JsonElement bookArrElm = obj.get("Books");
+        if(!bookArrElm)
+        {
+            JsonElement ThisMFmisspelledCharactersFfs = obj.get("Book"); 
+            Debug.Throw("LoadBooks(): Could not find array \cfBooks\c-."..(ThisMFmisspelledCharactersFfs ? "\nIntead, \cfBook\c- is found. Did you forget to \cfwrite extra s?\c-" : ""));
+        }
+        JsonArray bookArr = JsonArray(bookArrElm);
+
+        if(!bookArr)
+            Debug.Throw("LoadBooks(): Element \cfBooks\c- is found but it is not \cfArray\c-, but "..bookArrElm.GetClassName());
+        
+        for(uint i = 0; i < bookArr.size(); i++)
+        {
+            Book book = Book.Create();
+            JsonElement item = bookArr.get(i);
+            JsonObject bookObj = JsonObject(item);
+
+            JsonString nameJson = JsonString(bookObj.get("Name"));
+            JsonArray pagesArr = JsonArray(bookObj.get("Pages"));
+
+             if(!nameJson)
+                Debug.Throw("LoadBooks(): At Character "..(i+1).." : Property \cfName\c- is not present, or type is not \cfstring\c-");
+            if(!pagesArr)
+                Debug.Throw("LoadBooks(): At Character "..(i+1).." : Property \cfPages\c- is not present, or type is not \cfarray\c-");
+
+            Array<Page> pages;
+
+            for(uint j = 0; j < pagesArr.Size(); j++)
+            {
+                Page page = Page.Create();
+
+                JsonObject pageObj = JsonObject(pagesArr.Get(j));
+
+                JsonString bgJson = JsonString(pageObj.get("BG"));
+                JsonObject cgJson = JsonObject(pageObj.get("CG"));
+                JsonString sfxJson = JsonString(pageObj.get("Sound"));
+                JsonString musicJson = JsonString(pageObj.get("Music"));
+                JsonString textJson = JsonString(pageObj.get("Text"));
+                JsonInt timeJson = JsonInt(pageObj.get("Time"));
+                JsonArray charJson = JsonArray(pageObj.get("Characters"));
+
+                if(bgJson)
+                {
+                    TextureID tex = Texman.CheckForTexture(bgJson.s);
+                    if(tex.IsValid() == false)
+                        Debug.LogWarning("LoadBooks(): At Page "..(j+1).."  of Book "..(i+1)..": Property \cfBG\c-'s graphic is not valid. Make sure you input correct directory or the graphic's file is there");
+                    page.bg = tex;
+                }
+                
+                if(cgJson)
+                {  
+                    JsonString graphic = JsonString(cgJson.get("Graphic"));
+                    TextureID tex = Texman.CheckForTexture((graphic == null ? "" : graphic.s));
+                    if(tex.IsValid() == false)
+                        Debug.LogWarning("LoadBooks(): AtPage "..(j+1)..": Property \cfCG\c-'s graphic is not valid. Make sure you input correct directory or the graphic's file is there");
+                    JsonArray pos = JsonArray(cgJson.get("Pos"));
+                    JsonArray size = JsonArray(cgJson.get("Size"));
+
+                    double posX, posY, sizeX, sizeY;
+                    if(pos && JsonDouble(pos.Get(0))) posX = JsonDouble(pos.Get(0)).asDouble();
+                    else                       posX = 0.5;
+                    if(pos && JsonDouble(pos.Get(1))) posY = JsonDouble(pos.Get(1)).asDouble();
+                    else                       posY = 0.5;
+
+                    if(size && JsonDouble(size.Get(0))) sizeX = JsonDouble(size.Get(0)).asDouble();
+                    else                        sizeX = 1.0;
+                    if(size && JsonDouble(size.Get(1))) sizeY = JsonDouble(size.Get(1)).asDouble();
+                    else                        sizeY = 1.0;
+
+                    page.cg.graphic = tex;
+                    page.cg.pos = (posX, posY);
+                    page.cg.size= (sizeX, sizeY);
+                }
+
+                if(sfxJson)
+                    page.sound = sfxJson.s;
+                if(musicJson)
+                    page.music = musicJson.s;
+                if(textJson)
+                    page.text = textJson.s;
+                if(timeJson)
+                    page.time = timeJson.asInt();
+
+                if(charJson)
+                {
+                    for(uint k = 0; k < charJson.size(); k++)
+                    {
+                        JsonObject charObj = JsonObject(charJson.Get(k));
+                        if(!charObj)
+                            Debug.Throw("LoadBooks(): At Character "..(k+1).." of Page "..(j+1).." : Characters array should not have other than Objects.");
+                        
+                        Directive directive = Directive.Create();
+
+                        JsonArray char_removeJson = JsonArray(charObj.get("Remove"));
+                        JsonString char_codeNameJson = JsonString(charObj.get("Codename"));
+                        JsonString char_nameJson = JsonString(charObj.get("Name"));
+                        JsonString char_graphicJson = JsonString(charObj.get("Graphic"));
+                        JsonInt char_stateJson = JsonInt(charObj.get("State"));
+                        JsonDouble char_posJson = JsonDouble(charObj.get("Pos"));
+                        JsonArray char_sizeJson = JsonArray(charObj.get("Size"));
+                        JsonBool char_speakerJson = JsonBool(charObj.get("IsSpeaker"));
+                        JsonArray char_highlightJson = JsonArray(charObj.get("Highlight"));
+
+                        if(char_removeJson)
+                        {
+                            Array<string> tempRemove;
+                            for(uint l = 0; l < char_removeJson.Size(); l++)
+                            {
+                                tempRemove.Push(JsonString(char_removeJson.get(l)).s);
+                            }
+                            directive.remove.Move(tempRemove);
+                        }
+
+                        if(char_codeNameJson) directive.codeName = char_codeNameJson.s;
+                        if(char_nameJson) directive.name = char_nameJson.s;
+                        if(char_graphicJson)
+                        {
+                            TextureID tex = Texman.CheckForTexture(char_graphicJson.s);
+                            if(tex.IsValid() == false)
+                                Debug.LogWarning("LoadBooks(): At Character"..(k+1).." of Page "..(j+1)..": Property \cfGraphic\c-'s graphic is not valid. Make sure you input correct directory or the graphic's file is there");
+                            directive.graphic = tex;
+                        }
+                        if(char_stateJson) directive.state = char_stateJson.asInt();
+                        if(char_posJson) directive.pos = char_posJson.asDouble();
+                        if(char_speakerJson) directive.speaker = char_speakerJson.b;
+
+                        if(char_sizeJson)
+                        {
+                            double sizeX = JsonDouble(char_sizeJson.Get(0)).asDouble();
+                            double sizeY = JsonDouble(char_sizeJson.Get(1)).asDouble();
+                            directive.size = (sizeX, sizeY);
+                        }
+
+                        if(char_highlightJson)
+                        {
+                            Array<string> tempHighlight;
+                            for(uint l = 0; l < char_highlightJson.Size(); l++)
+                            {
+                                tempHighlight.Push(JsonString(char_highlightJson.get(l)).s);
+                            }
+                            directive.highlight.Move(tempHighlight);
+                        }
+
+                        page.directives.push(directive);
+                    }
+                }
+                Debug.LogDebug("LoadBook(): From \cf"..fileName.."\c-\n   Loaded Page "..(j+1)..":\n     "..page.Serialize());
+                pages.push(page);
+            }
+            book.name = nameJson.s;
+            book.pages.Move(pages);
+
+            Debug.LogDebug("LoadBook(): From \cf"..fileName.."\c-\n   Loaded book:\n     "..book.name);
+
+            books.Push(book);
+        }
+    }
+}

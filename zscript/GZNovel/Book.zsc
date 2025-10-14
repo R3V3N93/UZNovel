@@ -1,4 +1,11 @@
 Class Book play
 {
+    string name;
     Array<Page> pages;
+    
+    static Book Create()
+    {
+        Book charac = new('Book');
+        return charac;
+    }
 }

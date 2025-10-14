@@ -1,14 +1,59 @@
-struct Sentence
+struct CG
 {
-    Character character;
-    int charState;
-    String sentence;
-    int tic;
+    TextureID graphic;
+    Vector2 pos;
+    Vector2 size;
 }
 
-Class Page play 
+class Directive
 {
-    CharacterStage stage;
-    TextureID cg;
-    Sentence sentence;
+    string codeName;
+    string name;
+    TextureID graphic;
+    int state;
+    double pos;
+    bool speaker;
+    Vector2 size;
+    Array<string> remove;
+    Array<string> highlight;
+
+    static Directive Create()
+    {
+        Directive charac = new('Directive');
+        return charac;
+    }
+}
+
+class Page play 
+{
+    TextureID bg;
+    CG cg;
+    string sound;
+    string music;
+    string text;
+    int time;
+    Array<Directive> directives;
+
+    static Page Create()
+    {
+        Page temp = new('Page');
+        return temp;
+    }
+
+    string Serialize()
+    {
+        string s = "[";
+        s.AppendFormat("sound = "..sound..", ");
+        s.AppendFormat("music = "..music..", ");
+        s.AppendFormat("text = "..text..", ");
+        s.AppendFormat("time = "..time..", ");
+        s.AppendFormat("directives(characters) size = "..directives.Size()..", ");
+        s.AppendFormat("bg = [");
+        s.AppendFormat("graphic="..Texman.GetName(bg)..", IsValid() = "..(bg.IsValid() ? "true" : "false").."]");
+        s.AppendFormat("cg = [");
+        s.AppendFormat("graphic="..Texman.GetName(cg.graphic)..", IsValid() = "..(cg.graphic.IsValid() ? "true" : "false").."]");
+        s.AppendFormat("]]");
+
+        return s;
+    }
 }

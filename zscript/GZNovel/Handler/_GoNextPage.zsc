@@ -1,0 +1,124 @@
+extend class GZNovelHandler
+{
+    void GoNextPage(int page = -1) 
+    {
+        if(page != -1) // this is placed here in order to initialize books in StartBook()
+            curPage = page; 
+
+        if(!IsInBook())
+            return;
+
+        if(page == -1)
+            curPage++;
+
+        stage.speakers = "";
+        stage.text = null;
+        stage.curLine = 0;
+        stage.textTimer = 0.0;
+
+        Array<string> tempSpeakers;
+
+        Page curRealPage = curBook.pages[curPage];
+
+        S_StartSound(curRealPage.sound, CHAN_AUTO);
+
+        stage.text = config.font.BreakLines(curRealPage.text, 3000);
+        stage.timerCoeff = curRealPage.text.Length() * 1.0 / (curRealPage.time * 1.0);
+
+        for(int i = 0; i < curRealPage.directives.Size(); i++)
+        {
+            Directive curDirective = curRealPage.directives[i];
+
+            // Remove
+            if(curDirective.remove.Size() > 0)
+            {
+                if(curDirective.remove.Find("__ALL__") != curDirective.remove.Size())
+                {
+                    stage.characters.Clear();
+                    break;
+                }
+
+                for(int j = 0; j < stage.characters.Size(); j++)
+                {
+                    if(curDirective.remove.Find(stage.characters[j].codeName) != curDirective.remove.Size())
+                        stage.characters.Delete(j);
+                }
+            }
+            
+            // Obtain curCharacter
+            Character curCharacter;
+            // From stage
+            for(int j = 0; j < stage.characters.Size(); j++)
+            {
+                if(stage.characters[j].codeName == curDirective.codeName)
+                {
+                    curCharacter = stage.characters[j];
+                    break;
+                }
+            }
+            // If not found in stage, parse from stock characters.
+            if(!curCharacter)
+            {
+                curCharacter = FindCharacter(curDirective.codeName);
+                if(!curCharacter)
+                    Debug.Throw("From Book "..curBook.name.." : Unknown character \cf"..curDirective.codeName);
+
+                stage.characters.push(curCharacter);
+            }
+
+            // initialization
+            curCharacter.isHighlight = false;
+
+            // Name
+            if(curDirective.name != "") curCharacter.curName = curDirective.name; 
+            else                        curCharacter.curName = curCharacter.name; 
+
+            // State
+            curCharacter.state = curDirective.state;
+
+            // Graphic
+            if(curDirective.graphic.IsValid()) 
+                curCharacter.curGraphic = curDirective.graphic; 
+            else 
+            {
+                if(curCharacter.state == -1)
+                    curCharacter.curGraphic = Texman.CheckForTexture("");
+                else
+                    curCharacter.curGraphic = curCharacter.graphics[curCharacter.state];
+            }
+
+            // Position
+            curCharacter.pos = curDirective.pos;
+
+            // Speaker
+            if(curDirective.speaker)
+            {
+                tempSpeakers.Push(curCharacter.curName);
+                curCharacter.isHighlight = true;
+            }
+
+            // Highlight
+            if(curDirective.highlight.Find(curCharacter.codeName) != curDirective.highlight.Size())
+                curCharacter.isHighlight = true;
+
+            Debug.LogDebug("GoNextPage() : Current Stage Setup\n    Characters size = "..stage.characters.Size().."\n    Speakers = "..stage.speakers.."\n    timerCoeff = "..stage.timerCoeff.."\n    text = \""..stage.text.."\"");
+        }
+
+        if(tempSpeakers.Size() > 0)
+        {
+            if(tempSpeakers.Size() == 1)
+                stage.speakers = tempSpeakers[0];
+            else
+            {
+                for(int i = 0; i < tempSpeakers.Size(); i++)
+                {
+                    stage.speakers.AppendFormat(tempSpeakers[i]);
+                    if(i+1 < tempSpeakers.Size())
+                        stage.speakers.AppendFormat(", ");
+                }
+            }
+
+            tempSpeakers.Clear();
+        }
+    }
+}

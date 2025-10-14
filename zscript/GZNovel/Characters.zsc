@@ -1,17 +1,39 @@
 class Character play
 {
     Array<TextureID> graphics;
-    String codeName;
-    String name;
+    string codeName;
+    string name;
+
+    TextureID curGraphic;
+    string curName;
+    bool isHighlight;
+    int state;
     double pos;
 
-    static Character Create(stirng codeName, string name, Array<TextureID> graphics)
+    static Character Create(string codeName, string name, Array<TextureID> graphics)
     {
-        Character char = new('Character');
-        char.codeName = codeName;
-        char.name = name;
-        char.graphics.Move(graphics);
-        return char;
+        Character charac = new('Character');
+        charac.codeName = codeName;
+        charac.name = name;
+        charac.graphics.Move(graphics);
+
+        charac.pos = 0.0;
+        return charac;
+    }
+
+    string Serialize()
+    {
+        string s = "[";
+        s.AppendFormat("codeName = "..codeName..", ");
+        s.AppendFormat("name = "..name..", ");
+        s.AppendFormat("graphics = [");
+        for(int i = 0; i < graphics.Size(); i++)
+        {
+            s.AppendFormat("[graphic="..Texman.GetName(graphics[i])..", IsValid() = "..(graphics[i].IsValid() ? "true" : "false").."]");
+        }
+        s.AppendFormat("]]");
+
+        return s;
     }
 }
 

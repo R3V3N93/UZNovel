@@ -1,0 +1,41 @@
+{
+
+"Characters":
+[
+    {
+        "Codename" : "__ERROR__",
+        "Name" : "Faust",
+        "Graphics" :
+        [
+            "Graphics/Characters/Faust_Goofy.png"
+        ] 
+    }
+],
+
+"Books":
+[
+    {
+        "Name":"__ERROR__BOOK__",
+        "Pages":
+        [
+            {
+                "BG":"Graphics/Error/bg.png",
+                "Sound":"GZNerror",
+                "Text":"An error occured while loading a book. Please check the console log. dsaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "Time":105,
+                "Characters":
+                [
+                    {
+                        "Codename":"__ERROR__",
+                        "Name":"Error",
+                        "IsSpeaker":true,
+                        "Pos":0.5,
+                        "State":-1
+                    }
+                ]
+            }
+        ]
+    }
+]
+
+}

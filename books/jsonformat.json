@@ -2,23 +2,40 @@
 
 // Getting ``Comments are not permitted in JSON.`` Error?
 // It's totally fine. it's not even for practical use anyway, but format demonstration.
+// Byeah these red underlines are distracting af
 
+
+// GZNovel block is ONLY for GZNINFO.json file, at the root of the pk3.
+// This will set the overall setting for the library.
+"GZNovel":
+{
+    "VirtualResolution":[1920, 1080],
+    "Font":"BIGFONT",
+    "DialogueBG":"Graphics/bg",
+    "DialogueTextBox" : [[0.05, 0.78], [0.95, 1.0]],
+    "SpeakerPosition":[0.5, 0.8],
+    "DialogueTextSize":2.0,
+    "SpeakerTextSize":4.0
+},
+
+// Characters. Can be loaded with LoadCharacters()
 "Characters":
 [
     {
         "Codename": 
         "Codenames are names used to identify characters in code wise. (e.g., 'Name' parametre of 'Character' block within 'Pages', FindCharacter() and so on.",
         "Name": 
-        "Name is what is displayed in game. This can be further overriden in 'Name' parametre of 'Character' block. Example's below.",
+        "Name is what is displayed in game. This can be further overriden in 'Name' parametre of 'Character' block.",
         "Graphics":
         [
-            "Self explanatory. But, why array? Simple. You can define various states(such as, emotions, corpses, etc)",
-            "For example, This line can be this character's angry sprite",
-            "And this line can be this character's dead sprite"
+            "Self explanatory. But, why array? Simple. You can define various states(such as, emotions, corpses, etc)", // State 0 // <- the fuck is 'State'? See below ``Characters`` object within ``Pages`` object
+            "For example, This line can be this character's angry sprite", // State 1
+            "And this line can be this character's dead sprite" // State 2
         ]
     }
 ],
 
+// Characters. Can be loaded with LoadBooks()
 "Books":
 [
     {
@@ -26,49 +43,50 @@
         "Pages":
         [
             {
-                "BG": "Background image",
-                "Music": "Music.",
+                "BG":"Background img.",
+                "CG":
+                {
+                    "Graphic":"CG img.",
+                    "Pos":[0.5, 0.5], // For positioning stuffs, note that the library will get such values as 0 ~ 1 normal decimal number, in order to keep consistency via virtual resolution
+                    // (e.g. if current virtual resolution is (1920, 1080) and given position is (0.5, 0.5), it will point to (960, 540)) 
+                    "Size":[0.5, 0.5] // [ x, y ]. Common rule for my library. I wish Vectors were known rule for json.
+                },
+                "Sound":"sfx to play",
+                "Music":"Music to play",
+                "Text":"Text to display",
+                "Time":1, // The timespan in which the text will be 'typed'
+                // Characters block
+                // Characters could be removed/highlighted/added/revised in this block
+                // Common rules to know:
+                //     Characters are only recognized with codenames.
+                //     For displaying characters, there is a general ``stage`` that stores currently being displayed characters in.
+                //     Due to this, if a known character in current stage is read, it will ``revise`` the character.
+                //     On the other hand, if a character not in current stage is read, it will ``add`` the character to the stage.
+                //     __ALL__ means literally all characters in current stages.
                 "Characters":
                 [
                     {
-                        "Codename": "Char1",
-                        "Name": "???",// This will override the default name.
-                        "State": 0
-                        // state refers to the index at 'Graphics' of this character.
-                        // To bring the example above, state 1 will point
-                        // "For example, This line can be this character's angry sprite" line
+                        // Characters to remove.
+                        // Note that for removing all characters in current stage, ``"Remove":["__ALL__"]`` is way cheaper than actually putting all characters in this block.
+                        "Remove": ["Catherine", "All Catherine", "Earlking Heathcliff", "__ALL__"]
+                        // "Remove" could work on other position of "Characters" block, but I recommend putting it in the top position of every characters,
+                        // due to the stage system.
                     },
                     {
-                        "Codename": "Char2",
-                        "State": 0
-                    }
-                ],
-                "Highlight": // This block will highlight characters with given codenames.
-                [ 
-                    "__NULL__" // __NULL__ is internal 
-                ]
-            },
-
-            {
-                "Speaker": "Char1",
-                "Text": "The great speech to be told",
-                "Time": 69, 
-                "Highlight": ["Char1"],
-                "Characters":
-                [
+                        "Codename":"__ALL__",
+                        "Name":"Name to override current character's.", 
+                        "State":0,
+                        "Graphic":"Graphic to override current character's. Note that State gets ignored if this is not blank.",
+                        "Pos":0.5, // Position. Same rule as above, but it only accounts for X coordinates.
+                        "Size":[0.5, 0.5], // Same size property as above.
+                        "IsSpeaker":true // Makes this character the speaker of this conversation.
+                        // Note that several characters can have this true, which would result in effect of multiple characters speaking simulataneously.
+                        // Also note that being a speaker means also being automatically highlighted.
+                    },
                     {
-                        "Codename": "Char1",
-                        "State": 1
+                        "Highlight": ["__ALL__"] // Highlights.
                     }
                 ]
-            },
-            {
-                "CG":""
-            },
-            {
-                "Text": "",
-                "Time": 74,
-                "Highlight": ["__ALL__"]
             }
         ]
     }
