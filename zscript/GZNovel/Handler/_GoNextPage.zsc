@@ -11,6 +11,12 @@ extend class GZNovelHandler
         if(page == -1)
             curPage++;
 
+        if(curPage == curBook.GetPageCount())
+        {
+            EndBook();
+            return;
+        }
+
         stage.speakers = "";
         stage.text = null;
         stage.curLine = 0;
@@ -44,6 +50,9 @@ extend class GZNovelHandler
                         stage.characters.Delete(j);
                 }
             }
+
+            if(curDirective.codeName == "")
+                continue;
             
             // Obtain curCharacter
             Character curCharacter;

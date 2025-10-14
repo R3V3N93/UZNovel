@@ -63,15 +63,10 @@
                 //     Due to this, if a known character in current stage is read, it will ``revise`` the character.
                 //     On the other hand, if a character not in current stage is read, it will ``add`` the character to the stage.
                 //     __ALL__ means literally all characters in current stages.
+                "Remove": ["Catherine", "All Catherine", "Earlking Heathcliff", "__ALL__"],
+                "Highlight": ["__ALL__"], // Highlights.,
                 "Characters":
                 [
-                    {
-                        // Characters to remove.
-                        // Note that for removing all characters in current stage, ``"Remove":["__ALL__"]`` is way cheaper than actually putting all characters in this block.
-                        "Remove": ["Catherine", "All Catherine", "Earlking Heathcliff", "__ALL__"]
-                        // "Remove" could work on other position of "Characters" block, but I recommend putting it in the top position of every characters,
-                        // due to the stage system.
-                    },
                     {
                         "Codename":"__ALL__",
                         "Name":"Name to override current character's.", 
@@ -82,9 +77,6 @@
                         "IsSpeaker":true // Makes this character the speaker of this conversation.
                         // Note that several characters can have this true, which would result in effect of multiple characters speaking simulataneously.
                         // Also note that being a speaker means also being automatically highlighted.
-                    },
-                    {
-                        "Highlight": ["__ALL__"] // Highlights.
                     }
                 ]
             }

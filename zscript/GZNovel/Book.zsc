@@ -8,4 +8,9 @@ Class Book play
         Book charac = new('Book');
         return charac;
     }
+
+    int GetPageCount()
+    {
+        return pages.Size();
+    }
 }
