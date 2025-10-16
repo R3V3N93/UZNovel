@@ -19,7 +19,7 @@ extend class GZNovelHandler
     {
         // Obtain the file
  
-        int lump = Wads.CheckNumForFullName("/GZNINFO.json");
+        int lump = Wads.CheckNumForFullName("/UZNINFO.json"); // NO MORE GZNINFO!!!
         if(lump == -1)
         {
             Debug.LogWarning("LoadConfig() : Could not load json named \cfGZNINFO");
