@@ -21,35 +21,51 @@ extend class GZNovelHandler
         stage.text = null;
         stage.curLine = 0;
         stage.textTimer = 0.0;
+        stage.textPos = (0.0, 0.0);
 
         Array<string> tempSpeakers;
 
         Page curRealPage = curBook.pages[curPage];
 
         S_StartSound(curRealPage.sound, CHAN_AUTO);
+        S_StartSound(curRealPage.music, CHAN_AUTO);
 
-        stage.text = config.font.BreakLines(curRealPage.text, 3000);
+        stage.text = config.font.BreakLines(curRealPage.text, config.maxLen);
         stage.timerCoeff = curRealPage.text.Length() * 1.0 / (curRealPage.time * 1.0);
+        if(curRealPage.bg.IsValid())
+            stage.bg = curRealPage.bg;
+
+        if(curRealPage.textPivot & PIVOT_LEFT)
+            stage.textPos.x = config.textBox_TopLeft.x;
+        if(curRealPage.textPivot & PIVOT_CENTER)
+            stage.textPos.x = (config.textBox_TopLeft.x + config.textBox_BottomRight.x) / 2.0;
+        if(curRealPage.textPivot & PIVOT_RIGHT)
+            stage.textPos.x = config.textBox_BottomRight.x;
+        if(curRealPage.textPivot & PIVOT_TOP)
+            stage.textPos.y = config.textBox_TopLeft.y;
+        if(curRealPage.textPivot & PIVOT_MIDDLE)
+            stage.textPos.y = (config.textBox_TopLeft.y + config.textBox_BottomRight.y) / 2.0;
+        if(curRealPage.textPivot & PIVOT_BOTTOM)
+            stage.textPos.y = config.textBox_BottomRight.y;
+
+        // Remove
+        if(curRealPage.remove.Size() > 0)
+        {
+            if(curRealPage.remove.Find("__ALL__") != curRealPage.remove.Size())
+            {
+                stage.characters.Clear();
+            }
+
+            for(int j = 0; j < stage.characters.Size(); j++)
+            {
+                if(curRealPage.remove.Find(stage.characters[j].codeName) != curRealPage.remove.Size())
+                    stage.characters.Delete(j);
+            }
+        }
 
         for(int i = 0; i < curRealPage.directives.Size(); i++)
         {
             Directive curDirective = curRealPage.directives[i];
-
-            // Remove
-            if(curDirective.remove.Size() > 0)
-            {
-                if(curDirective.remove.Find("__ALL__") != curDirective.remove.Size())
-                {
-                    stage.characters.Clear();
-                    break;
-                }
-
-                for(int j = 0; j < stage.characters.Size(); j++)
-                {
-                    if(curDirective.remove.Find(stage.characters[j].codeName) != curDirective.remove.Size())
-                        stage.characters.Delete(j);
-                }
-            }
 
             if(curDirective.codeName == "")
                 continue;
@@ -100,17 +116,28 @@ extend class GZNovelHandler
             curCharacter.pos = curDirective.pos;
 
             // Speaker
-            if(curDirective.speaker)
-            {
-                tempSpeakers.Push(curCharacter.curName);
-                curCharacter.isHighlight = true;
-            }
-
-            // Highlight
-            if(curDirective.highlight.Find(curCharacter.codeName) != curDirective.highlight.Size())
-                curCharacter.isHighlight = true;
+            if(curDirective.speaker) tempSpeakers.Push(curCharacter.curName);
 
             Debug.LogDebug("GoNextPage() : Current Stage Setup\n    Characters size = "..stage.characters.Size().."\n    Speakers = "..stage.speakers.."\n    timerCoeff = "..stage.timerCoeff.."\n    text = \""..stage.text.."\"");
+        }
+
+        // Highlight
+        if(curRealPage.highlight.Find("__ALL__") != curRealPage.highlight.Size())
+        {
+            for(int j = 0; j < stage.characters.Size(); j++)
+            {
+                stage.characters[j].isHighlight = true;
+            }
+        }
+        else
+        {
+            for(int j = 0; j < stage.characters.Size(); j++)
+            {
+                if(curRealPage.highlight.Find(stage.characters[j].codeName) != curRealPage.highlight.Size())
+                    stage.characters[j].isHighlight = true;
+                else
+                    stage.characters[j].isHighlight = false;
+            }
         }
 
         if(tempSpeakers.Size() > 0)

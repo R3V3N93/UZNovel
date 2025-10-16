@@ -43,6 +43,12 @@ extend class GZNovelHandler
             if(!pagesArr)
                 Debug.Throw("LoadBooks(): At Character "..(i+1).." : Property \cfPages\c- is not present, or type is not \cfarray\c-");
 
+            if(FindBook(nameJson.s))
+            {
+                Debug.LogWarning("LoadBooks() : From \cf"..fileName.."\c-, book \cf"..nameJson.s.."\c- is already loaded.");
+                continue;
+            }
+
             Array<Page> pages;
 
             for(uint j = 0; j < pagesArr.Size(); j++)
@@ -56,8 +62,11 @@ extend class GZNovelHandler
                 JsonString sfxJson = JsonString(pageObj.get("Sound"));
                 JsonString musicJson = JsonString(pageObj.get("Music"));
                 JsonString textJson = JsonString(pageObj.get("Text"));
+                JsonArray textPivotJson = JsonArray(pageObj.get("TextPivot"));
                 JsonInt timeJson = JsonInt(pageObj.get("Time"));
                 JsonArray charJson = JsonArray(pageObj.get("Characters"));
+                JsonArray char_removeJson = JsonArray(pageObj.get("Remove"));
+                JsonArray char_highlightJson = JsonArray(pageObj.get("Highlight"));
 
                 if(bgJson)
                 {
@@ -98,8 +107,48 @@ extend class GZNovelHandler
                     page.music = musicJson.s;
                 if(textJson)
                     page.text = textJson.s;
+                if(!textPivotJson) page.textPivot = PIVOT_LEFT|PIVOT_TOP;
+                else                   
+                {
+                    for(int i = 0; i < textPivotJson.Size(); i++)
+                    {
+                        string item = JsonString(textPivotJson.Get(i)).s;
+                        if(item == "Left")
+                            page.textPivot |= PIVOT_LEFT;
+                        if(item == "Center")
+                            page.textPivot |= PIVOT_CENTER;
+                        if(item == "Right")
+                            page.textPivot |= PIVOT_RIGHT;
+                        if(item == "Top")
+                            page.textPivot |= PIVOT_TOP;
+                        if(item == "Middle")
+                            page.textPivot |= PIVOT_MIDDLE;
+                        if(item == "Bottom")
+                            page.textPivot |= PIVOT_BOTTOM;
+                    }
+                }
                 if(timeJson)
                     page.time = timeJson.asInt();
+
+                if(char_removeJson)
+                {
+                    Array<string> tempRemove;
+                    for(uint l = 0; l < char_removeJson.Size(); l++)
+                    {
+                        tempRemove.Push(JsonString(char_removeJson.get(l)).s);
+                    }
+                    page.remove.Move(tempRemove);
+                }
+
+                if(char_highlightJson)
+                {
+                    Array<string> tempHighlight;
+                    for(uint l = 0; l < char_highlightJson.Size(); l++)
+                    {
+                        tempHighlight.Push(JsonString(char_highlightJson.get(l)).s);
+                    }
+                    page.highlight.Move(tempHighlight);
+                }
 
                 if(charJson)
                 {
@@ -111,7 +160,6 @@ extend class GZNovelHandler
                         
                         Directive directive = Directive.Create();
 
-                        JsonArray char_removeJson = JsonArray(charObj.get("Remove"));
                         JsonString char_codeNameJson = JsonString(charObj.get("Codename"));
                         JsonString char_nameJson = JsonString(charObj.get("Name"));
                         JsonString char_graphicJson = JsonString(charObj.get("Graphic"));
@@ -119,17 +167,6 @@ extend class GZNovelHandler
                         JsonDouble char_posJson = JsonDouble(charObj.get("Pos"));
                         JsonArray char_sizeJson = JsonArray(charObj.get("Size"));
                         JsonBool char_speakerJson = JsonBool(charObj.get("IsSpeaker"));
-                        JsonArray char_highlightJson = JsonArray(charObj.get("Highlight"));
-
-                        if(char_removeJson)
-                        {
-                            Array<string> tempRemove;
-                            for(uint l = 0; l < char_removeJson.Size(); l++)
-                            {
-                                tempRemove.Push(JsonString(char_removeJson.get(l)).s);
-                            }
-                            directive.remove.Move(tempRemove);
-                        }
 
                         if(char_codeNameJson) directive.codeName = char_codeNameJson.s;
                         if(char_nameJson) directive.name = char_nameJson.s;
@@ -149,16 +186,6 @@ extend class GZNovelHandler
                             double sizeX = JsonDouble(char_sizeJson.Get(0)).asDouble();
                             double sizeY = JsonDouble(char_sizeJson.Get(1)).asDouble();
                             directive.size = (sizeX, sizeY);
-                        }
-
-                        if(char_highlightJson)
-                        {
-                            Array<string> tempHighlight;
-                            for(uint l = 0; l < char_highlightJson.Size(); l++)
-                            {
-                                tempHighlight.Push(JsonString(char_highlightJson.get(l)).s);
-                            }
-                            directive.highlight.Move(tempHighlight);
                         }
 
                         page.directives.push(directive);

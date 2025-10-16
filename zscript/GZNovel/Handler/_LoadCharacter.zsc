@@ -49,6 +49,12 @@ extend class GZNovelHandler
             if(!graphicsArr)
                 Debug.Throw("LoadCharacters(): At Character "..(i+1).." : Property \cfGraphics\c- is not present, or type is not \cfarray\c-");
 
+            if(FindCharacter(codeNameJson.s))
+            {
+                Debug.LogWarning("LoadCharacters() : From \cf"..fileName.."\c-, Character \cf"..codeNameJson.s.."\c- is already loaded.");
+                continue;
+            }
+
             Array<TextureID> graphics;
 
             for(uint j = 0; j < graphicsArr.Size(); j++)

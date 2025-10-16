@@ -23,6 +23,7 @@
                 "Sound":"GZNerror",
                 "Text":"An error occured while loading a book. Please check the console log. dsaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
                 "Time":105,
+                "TextPivot":["Middle", "Center"],
                 "Characters":
                 [
                     {

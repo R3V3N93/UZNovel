@@ -15,8 +15,12 @@ struct Debug
 
     static void LogMessage(string msg, int severity, string name)
     {
-        //if(Cvar.GetCvar("cl_debug", players[ConsolePlayer]).GetBool() == true)
-            console.printf(LogSeverity(severity).." "..name.." : "..msg);
+        CVar cvar = CVar.GetCVar("cl_debug", players[ConsolePlayer]);
+        if(cvar)
+        {
+            if(cvar.GetBool() == true)
+                console.printf(LogSeverity(severity).." "..name.." : "..msg);
+        }        
     }
 
     static void LogDebug(string msg, string name = "")

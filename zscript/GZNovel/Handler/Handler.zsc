@@ -1,25 +1,13 @@
-struct GZNConfig
-{
-    bool isSetup;
-    Vector2 virtualResolution;
-    Font font;
-    TextureID dialogueBG;
-    Vector2 textBox_TopLeft;
-    Vector2 textBox_BottomRight;
-    int maxLen;
-    Vector2 speakerPos;
-    double dialogueTextSize;
-    double speakerTextSize;
-}
-
 struct Stage
 {
     Array<Character> characters;
-    string speakers;
-    double timerCoeff;
-    BrokenLines text;
-    int curLine;
-    double textTimer;
+    TextureID bg;
+    string speakers; // Volatile
+    double timerCoeff; // Volatile
+    BrokenLines text; // Volatile
+    int curLine; // Volatile
+    double textTimer; // Volatile
+    Vector2 textPos; // Volatile
 }
 
 Class GZNovelHandler : StaticEventHandler
@@ -47,9 +35,12 @@ Class GZNovelHandler : StaticEventHandler
 
     override void WorldLoaded (WorldEvent e)
     {
-        //LoadCharacters("/books/example.json");
-        //LoadBooks("/books/example.json");
-        StartBookString("Test");
+        StartBookString("__ERROR__BOOK__");
+    }
+
+    override void WorldUnloaded (WorldEvent e)
+    {
+        EndBook();
     }
 
     static GZNovelHandler Get()
@@ -70,6 +61,8 @@ Class GZNovelHandler : StaticEventHandler
     void StartBook(Book what) 
     {
         curBook = what;
+        level.SetFrozen(true);
+        S_PauseSound(false, false);
         GoNextPage(0);
     }
 
@@ -78,12 +71,18 @@ Class GZNovelHandler : StaticEventHandler
         StartBook(FindBook(what));
     }
 
-    
-
     void EndBook() 
     {
         curBook = null;
         curPage = -1;
+        stage.characters.Clear();
+        stage.speakers = "";
+        stage.timerCoeff = 0.0;
+        stage.text = null;
+        stage.curLine = 0;
+        stage.textTimer = 0;
+        S_ResumeSound(false);
+        level.SetFrozen(false);
     }
 
     clearscope bool IsInBook()
@@ -101,14 +100,6 @@ Class GZNovelHandler : StaticEventHandler
                 return characters[i];
         }
         return null;
-    }
-
-    clearscope private Vector2 VirtualRatio()
-    {
-        int a, b, x, y;
-        [a, b, x, y] = Screen.GetViewWindow();
-        //console.printf(a.." "..b.." "..x.." "..y);
-        return (x / config.virtualResolution.x, y / config.virtualResolution.y); 
     }
 
     override void WorldTick()
@@ -132,11 +123,12 @@ Class GZNovelHandler : StaticEventHandler
     {
         if(IsInBook())
         {
-            if(InputEvent.Type_KeyUp)
+            if(e.type == e.Type_KeyDown)
             {
                 if(bindings.GetBinding(e.KeyScan) == "+attack")
                 {
-                    if(stage.curLine < stage.text.Count())
+                    Debug.LogDebug("InputProcess.GoNextPage : Proceeding to next page");
+        s           if(stage.curLine < stage.text.Count())
                         stage.curLine = stage.text.Count();
                     else
                         EventHandler.SendNetworkEvent("GoNextPage");
@@ -167,27 +159,28 @@ Class GZNovelHandler : StaticEventHandler
             Page curRealPage = curBook.pages[curPage];
 
             // BG
-            GZN_DrawImage(curRealPage.bg, (0.0, 0.0));
+            GZN_DrawImage(stage.bg, (0.0, 0.0));
 
             // CG
             if(curRealPage.cg.graphic.IsValid())
             {
-                GZN_DrawImage(curRealPage.cg.graphic, curRealPage.cg.pos, size:curRealPage.cg.size);
+                GZN_DrawImage(curRealPage.cg.graphic, curRealPage.cg.pos, pivot:PIVOT_CENTER|PIVOT_MIDDLE, size:curRealPage.cg.size);
             }
 
             // Characters
-
             for(int i = 0; i < stage.characters.Size(); i++)
             {
                 Character curCharacter = stage.characters[i];
                 GZN_DrawImage(curCharacter.curGraphic, (curCharacter.pos, 1.0), highlight : curCharacter.IsHighlight);
             }
 
+            if(stage.text.Count() > 0) {
+
             // Dialogue box
             GZN_DrawImage(config.dialogueBG, (0.5, 1.0));
 
             // Speaker
-            GZN_DrawText(stage.speakers, config.speakerPos, pivot:PIVOT_CENTER|PIVOT_MIDDLE, size:(config.speakerTextSize, config.speakerTextSize));
+            GZN_DrawText(stage.speakers, config.speakerPos, pivot:config.speakerPivot, size:(config.speakerTextSize, config.speakerTextSize));
 
             // Dialogue text
             for(int i = 0; i < stage.text.Count(); i++)
@@ -197,9 +190,10 @@ Class GZNovelHandler : StaticEventHandler
                     continue;
 
                 if(i < stage.curLine)
-                    GZN_DrawText(stage.text.StringAt(i), (config.textBox_TopLeft + config.textBox_BottomRight) / 2.0, line : i, size:(config.dialogueTextSize, config.dialogueTextSize));
+                    GZN_DrawText(stage.text.StringAt(i), stage.textPos, line : i, pivot:curRealPage.textPivot, size:(config.dialogueTextSize, config.dialogueTextSize));
                 else
-                    GZN_DrawText(stage.text.StringAt(i).Left(int(stage.textTimer)), (config.textBox_TopLeft + config.textBox_BottomRight) / 2.0, line : i, size:(config.dialogueTextSize, config.dialogueTextSize));
+                    GZN_DrawText(stage.text.StringAt(i).Left(int(stage.textTimer)), stage.textPos, line : i, pivot:curRealPage.textPivot, size:(config.dialogueTextSize, config.dialogueTextSize));
+            }
             }
         }
     }

@@ -1,13 +1,5 @@
 {
 
-"GZNovel":
-{
-    "VirtualResolution":[1920, 1080],
-    "Font":"BIGFONT",
-    "DialogueBG":"Graphics/bg"
-},
-
-
 "Characters":
 [
     {
@@ -62,7 +54,7 @@
             {
                 "BG":"graphics/bg/black.png",
                 "Text":"Do you see now? You can't run from us.",
-                "Sound":"sounds/example/S001B-01.wav",
+                "Sound":"S001B-01",
                 "Time":105,
                 "Characters":
                 [
@@ -88,7 +80,7 @@
             },
             {
                 "Text":"Ah~ If we're being technical, what our master has planned apparently isn't one of the City's taboos.",
-                "Sound":"sounds/example/S001B-03.wav",
+                "Sound":"S001B-03",
                 "Time":210,
                 "Characters":
                 [
@@ -101,25 +93,26 @@
             },
             {
                 "Text":"It's just the kind of thing that... no one has ever dared to consider, you catch my drift?",
-                "Sound":"sounds/example/S001B-04.wav",
+                "Sound":"S001B-04",
                 "Time":140,
                 "Characters":
                 [
                     {
                         "Codename":"LionelMessi",
-                        "Pos":0.5,
+                        "State":-1,
                         "IsSpeaker":true
                     }
                 ]
             },
             {
                 "Text":"Huh, would you look at that...",
-                "Sound":"sounds/example/S001B-05.wav",
+                "Sound":"S001B-05",
                 "Time":105,
                 "Characters":
                 [
                     {
                         "Codename":"LionelMessi",
+                        "State":-1,
                         "IsSpeaker":true
                     }
                 ]
@@ -127,13 +120,12 @@
             {
                 "BG":"graphics/bg/Dark_Forest.png",
                 "Text":"Nah bro just exchanged the head so swiftly what the hellings",
-                "Sound":"sounds/example/S001B-06.wav",
+                "Sound":"S001B-06",
                 "Time":210,
+                "Remove":["__ALL__"],
+                "Highlight":["Chadwick"],
                 "Characters":
                 [
-                    {
-                        "Remove":"__ALL__"
-                    },
                     {
                         "Codename":"Chadwick",
                         "Pos":0.6,
@@ -144,6 +136,7 @@
             {
                 "Text":"Knigh... Just wait 'til I get the Yummer... You'll be no match for my...",
                 "Time":210,
+                "Highlight":["Durante"],
                 "Characters":
                 [
                     {
@@ -156,13 +149,12 @@
             },
             {
                 "Text":"This mf is just ticking bruh",
-                "Sound":"sounds/example/S001B-09.wav",
+                "Sound":"S001B-09",
                 "Time":245,
+                "Remove":["Chadwick"],
+                "Highlight":["UlfAnderson"],
                 "Characters":
                 [
-                    {
-                        "Remove":["Chadwick"]
-                    },
                     {
                         "Codename":"UlfAnderson",
                         "Pos":0.6,
@@ -174,15 +166,14 @@
                 "Text":"Holy shit it's the Lim'bus'",
                 "CG":
                 {
-                    "Graphics":"Graphics/cg/S0_1_4.png"
+                    "Graphic":"Graphics/cg/S0_1_4.png",
+                    "Size":[0.8, 0.8]
                 },
-                "Sound":"sounds/example/S001B-32.wav",
+                "Sound":"S001B-32",
                 "Time":35,
+                "Remove":["__ALL__"],
                 "Characters":
                 [
-                    {
-                        "Remove":"__ALL__"
-                    },
                     {
                         "Codename":"UlfAnderson",
                         "State":-1,
@@ -192,13 +183,12 @@
             },
             {
                 "Text":"Holy shit it's Dante from Divine Comedy",
-                "Sound":"sounds/example/S001B-46.wav",
+                "Sound":"S001B-46",
                 "Time":175,
+                "Remove":["__ALL__"],
+                "Highlight":["Faust"],
                 "Characters":
                 [
-                    {
-                        "Remove":"__ALL__"
-                    },
                     {
                         "Codename":"VeryMouse",
                         "Pos":0.5,
@@ -209,13 +199,15 @@
             {
                 "BG":"graphics/bg/black.png",
                 "Text":"Follow your star.",
-                "Sound":"sounds/example/S001B-47.wav",
+                "Sound":"S001B-47",
                 "Time":105,
+                "Highlight":["Faust"],
                 "Characters":
                 [
                     {
                         "Codename":"VeryMouse",
                         "State":1,
+                        "Pos":0.5,
                         "IsSpeaker":true
                     }
                 ]

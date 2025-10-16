@@ -15,8 +15,7 @@ extend class GZNovelHandler
         Vector2 texSize;
         Vector2 realPos;
         [texSize.x, texSize.y] = Texman.GetSize(tex);
-        Vector2 ratio = VirtualRatio();
-        texSize = (texSize.x * size.x * ratio.x, texSize.y * size.y * ratio.y);
+        texSize = (texSize.x * size.x, texSize.y * size.y);
 
         realPos = (pos.x * config.virtualResolution.x, pos.y * config.virtualResolution.y);
 
@@ -49,9 +48,8 @@ extend class GZNovelHandler
 
         Vector2 textSize = (config.font.StringWidth(text), config.Font.GetHeight());
         Vector2 realPos;
-        Vector2 ratio = VirtualRatio();
         //console.printf(""..textSize);
-        textSize = (textSize.x * size.x, textSize.y * size.y);
+        textSize = (textSize.x * size.x, textSize.y * size.y); // I'm still not sure why I don't have to multiply virtual ratio. Probably I'm missing a logic here
         
 
         realPos = (pos.x * config.virtualResolution.x, pos.y * config.virtualResolution.y) + (0, textSize.y * line);

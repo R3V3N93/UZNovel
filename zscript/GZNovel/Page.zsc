@@ -14,8 +14,6 @@ class Directive
     double pos;
     bool speaker;
     Vector2 size;
-    Array<string> remove;
-    Array<string> highlight;
 
     static Directive Create()
     {
@@ -31,8 +29,12 @@ class Page play
     string sound;
     string music;
     string text;
+    int textPivot;
     int time;
     Array<Directive> directives;
+
+    Array<string> remove;
+    Array<string> highlight;
 
     static Page Create()
     {
