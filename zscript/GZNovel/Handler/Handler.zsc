@@ -1,6 +1,7 @@
 struct Stage
 {
     Array<Character> characters;
+    Array<CG> cg;
     TextureID bg;
     string speakers; // Volatile
     double timerCoeff; // Volatile
@@ -164,7 +165,7 @@ Class GZNovelHandler : StaticEventHandler
             // CG
             if(curRealPage.cg.graphic.IsValid())
             {
-                GZN_DrawImage(curRealPage.cg.graphic, curRealPage.cg.pos, pivot:PIVOT_CENTER|PIVOT_MIDDLE, size:curRealPage.cg.size);
+                GZN_DrawImage(curRealPage.cg.graphic, curRealPage.cg.pos, pivot:curRealPage.cg.pivot, size:curRealPage.cg.size);
             }
 
             // Characters

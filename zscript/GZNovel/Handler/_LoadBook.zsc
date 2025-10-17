@@ -38,10 +38,8 @@ extend class GZNovelHandler
             JsonString nameJson = JsonString(bookObj.get("Name"));
             JsonArray pagesArr = JsonArray(bookObj.get("Pages"));
 
-             if(!nameJson)
-                Debug.Throw("LoadBooks(): At Character "..(i+1).." : Property \cfName\c- is not present, or type is not \cfstring\c-");
-            if(!pagesArr)
-                Debug.Throw("LoadBooks(): At Character "..(i+1).." : Property \cfPages\c- is not present, or type is not \cfarray\c-");
+            if(!nameJson) Debug.Throw("LoadBooks(): At Character "..(i+1).." : Property \cfName\c- is not present, or type is not \cfstring\c-");
+            if(!pagesArr) Debug.Throw("LoadBooks(): At Character "..(i+1).." : Property \cfPages\c- is not present, or type is not \cfarray\c-");
 
             if(FindBook(nameJson.s))
             {
@@ -58,7 +56,7 @@ extend class GZNovelHandler
                 JsonObject pageObj = JsonObject(pagesArr.Get(j));
 
                 JsonString bgJson = JsonString(pageObj.get("BG"));
-                JsonObject cgJson = JsonObject(pageObj.get("CG"));
+                JsonArray cgJson = JsonArray(pageObj.get("CG"));
                 JsonString sfxJson = JsonString(pageObj.get("Sound"));
                 JsonString musicJson = JsonString(pageObj.get("Music"));
                 JsonString textJson = JsonString(pageObj.get("Text"));
@@ -84,17 +82,47 @@ extend class GZNovelHandler
                         Debug.LogWarning("LoadBooks(): AtPage "..(j+1)..": Property \cfCG\c-'s graphic is not valid. Make sure you input correct directory or the graphic's file is there");
                     JsonArray pos = JsonArray(cgJson.get("Pos"));
                     JsonArray size = JsonArray(cgJson.get("Size"));
+                    JsonArray cgPivotJson = JsonArray(cgJson.get("Pivot"));
+                    JsonInt cdFadeOutJson = JsonInt(cgJson.get("FadeOut"));
+                    JsonInt cdFadeInJson = JsonInt(cgJson.get("FadeIn"));
 
                     double posX, posY, sizeX, sizeY;
                     if(pos && JsonDouble(pos.Get(0))) posX = JsonDouble(pos.Get(0)).asDouble();
-                    else                       posX = 0.5;
+                    else                              posX = 0.5;
                     if(pos && JsonDouble(pos.Get(1))) posY = JsonDouble(pos.Get(1)).asDouble();
-                    else                       posY = 0.5;
+                    else                              posY = 0.5;
 
                     if(size && JsonDouble(size.Get(0))) sizeX = JsonDouble(size.Get(0)).asDouble();
-                    else                        sizeX = 1.0;
+                    else                                sizeX = 1.0;
                     if(size && JsonDouble(size.Get(1))) sizeY = JsonDouble(size.Get(1)).asDouble();
-                    else                        sizeY = 1.0;
+                    else                                sizeY = 1.0;
+
+                    if(!cgPivotJson) page.cg.pivot = PIVOT_CENTER|PIVOT_MIDDLE;
+                    else                   
+                    {
+                        for(int i = 0; i < cgPivotJson.Size(); i++)
+                        {
+                            string item = JsonString(cgPivotJson.Get(i)).s;
+                            if(item == "Left")
+                                page.cg.pivot |= PIVOT_LEFT;
+                            if(item == "Center")
+                                page.cg.pivot |= PIVOT_CENTER;
+                            if(item == "Right")
+                                page.cg.pivot |= PIVOT_RIGHT;
+                            if(item == "Top")
+                                page.cg.pivot |= PIVOT_TOP;
+                            if(item == "Middle")
+                                page.cg.pivot |= PIVOT_MIDDLE;
+                            if(item == "Bottom")
+                                page.cg.pivot |= PIVOT_BOTTOM;
+                        }
+                    }
+
+                    if(size && cdFadeOutJson) page.cg.fadeOut = cdFadeOutJson.asInt();
+                    else                      page.cg.fadeOut = 0;
+
+                    if(size && cdFadeInJson) page.cg.fadeIn = cdFadeInJson.asInt();
+                    else                     page.cg.fadeIn = 0;
 
                     page.cg.graphic = tex;
                     page.cg.pos = (posX, posY);

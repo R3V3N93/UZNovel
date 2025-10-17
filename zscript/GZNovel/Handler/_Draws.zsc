@@ -10,7 +10,7 @@ extend class GZNovelHandler
         PIVOT_BOTTOM = 1<<5,
     }
     
-    ui void GZN_DrawImage(TextureID tex, Vector2 pos, int pivot = PIVOT_LEFT|PIVOT_TOP, Vector2 size = (1.0, 1.0), bool highlight = true)
+    ui void GZN_DrawImage(TextureID tex, Vector2 pos, int pivot = PIVOT_LEFT|PIVOT_TOP, Vector2 size = (1.0, 1.0), bool highlight = true, double alpha = 1.0)
     {
         Vector2 texSize;
         Vector2 realPos;
@@ -33,6 +33,7 @@ extend class GZNovelHandler
             animate: true,
             x: realPos.x, 
             y: realPos.y,
+            DTA_Alpha, alpha,
             DTA_VirtualWidthF, config.virtualResolution.x,
             DTA_VirtualheightF, config.virtualResolution.y,
             DTA_ScaleX, size.x,

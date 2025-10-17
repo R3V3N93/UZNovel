@@ -32,7 +32,7 @@ extend class GZNovelHandler
 			Debug.Throw("LoadConfig(): "..JsonError(data).what);
 		}
 
-        JsonObject configObj = JsonObject(JsonObject(JsonElement(data)).Get("GZNovel")); // Retarded casings of castings. And this makes a joke, astounding.
+        JsonObject configObj = JsonObject(JsonObject(JsonElement(data)).Get("UZNovel")); // Retarded casings of castings. And this makes a joke, astounding.
 
         JsonArray virtualResJson = JsonArray(configObj.Get("VirtualResolution"));
         JsonString fontJson = JsonString(configObj.Get("Font"));

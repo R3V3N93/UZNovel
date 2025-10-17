@@ -1,8 +1,19 @@
-struct CG
+class CG
 {
+    int id;
     TextureID graphic;
     Vector2 pos;
     Vector2 size;
+    int pivot;
+    int fadeIn;
+    int fadeOut;
+    int remove;
+
+    static CG Create()
+    {
+        CG temp = new('CG');
+        return temp;
+    }
 }
 
 class Directive

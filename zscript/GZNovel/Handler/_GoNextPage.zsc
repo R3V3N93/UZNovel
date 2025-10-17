@@ -23,6 +23,8 @@ extend class GZNovelHandler
         stage.textTimer = 0.0;
         stage.textPos = (0.0, 0.0);
 
+        
+
         Array<string> tempSpeakers;
 
         Page curRealPage = curBook.pages[curPage];

@@ -7,7 +7,7 @@
 
 // GZNovel block is ONLY for GZNINFO.json file, at the root of the pk3.
 // This will set the overall setting for the library.
-"GZNovel":
+"UZNovel":
 {
     "VirtualResolution":[1920, 1080],
     "Font":"BIGFONT",
@@ -46,12 +46,19 @@
             {
                 "BG":"Background img.",
                 "CG":
-                {
-                    "Graphic":"CG img.",
-                    "Pos":[0.5, 0.5], // For positioning stuffs, note that the library will get such values as 0 ~ 1 normal decimal number, in order to keep consistency via virtual resolution
-                    // (e.g. if current virtual resolution is (1920, 1080) and given position is (0.5, 0.5), it will point to (960, 540)) 
-                    "Size":[0.5, 0.5] // [ x, y ]. Common rule for my library. I wish Vectors were known rule for json.
-                },
+                [
+                    {
+                        "id":1,
+                        "Graphic":"CG img.",
+                        "Pos":[0.5, 0.5], // For positioning stuffs, note that the library will get such values as 0 ~ 1 normal decimal number, in order to keep consistency via virtual resolution
+                        // (e.g. if current virtual resolution is (1920, 1080) and given position is (0.5, 0.5), it will point to (960, 540)) 
+                        "Size":[0.5, 0.5], // [ x, y ]. Common rule for my library. I wish Vectors were known rule for json.
+                        "Pivot":["Center", "Middle"],
+                        "FadeIn":35,
+                        "FadeOut":35,
+                        "Remove":null // the value of Remove key is not important. The only thing matters is its existence, so technically you can put any value in this key. But for consistency and to be brief, null is recommended.
+                    }
+                ],
                 "Sound":"sfx to play",
                 "Music":"Music to play",
                 "Text":"Text to display",
