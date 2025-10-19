@@ -1,0 +1,172 @@
+Log started: 2025-10-19 12:34:39
+I_Init: Setting up machine state.
+CPU speed: 2904 MHz
+CPU Vendor ID: GenuineIntel
+  Name: Intel(R) Core(TM) i5-9400F CPU @ 2.90GHz
+  Family 6, Model 158, Stepping 13
+  Features: SSE2 SSE3 SSSE3 SSE4.1 SSE4.2 AVX AVX2 F16C FMA3 BMI1 BMI2 HyperThreading
+V_Init: allocate screen.
+ST_Init: Init startup screen.
+Checking cmd-line parameters...
+S_InitData: Load sound definitions.
+G_ParseMapInfo: Load map definitions.
+Texman.Init: Init texture manager.
+ParseTeamInfo: Load team definitions.
+LoadActors: Load actor definitions.
+Script warning, "D:/Projects/AdventureThing/GZNovel/:zscript/gznovel/handler/handler.zsc" line 115:
+Comparison between signed and unsigned value
+Script warning, "D:/Projects/AdventureThing/GZNovel/:zscript/gznovel/handler/_loadbook.zsc" line 79:
+Comparison between signed and unsigned value
+Script warning, "D:/Projects/AdventureThing/GZNovel/:zscript/gznovel/handler/_loadbook.zsc" line 113:
+Comparison between signed and unsigned value
+Script warning, "D:/Projects/AdventureThing/GZNovel/:zscript/gznovel/handler/_loadbook.zsc" line 145:
+Comparison between signed and unsigned value
+Script warning, "D:/Projects/AdventureThing/GZNovel/:zscript/gznovel/handler/_loadconfig.zsc" line 77:
+Comparison between signed and unsigned value
+5 warnings while parsing scripts
+script parsing took 631.99 ms
+LoadConfig(): Loaded Configuratiion:
+    Virtual Resolution : (1920.00000, 1080.00000)
+    Font : calibri
+    DialogueBG : 
+    textBox_TopLeft = (0.05000, 0.85000)
+    textBox_BottomRight = (0.95000, 1.00000)
+    maxLen = 3455
+    (0.20000, 0.82500)
+    0.50000
+    1.50000
+R_Init: Init Doom refresh subsystem.
+DecalLibrary: Load decals.
+M_Init: Init menus.
+P_Init: Init Playloop state.
+ParseSBarInfo: Loading custom status bar definition.
+D_CheckNetGame: Checking network game status.
+player 1 of 1 (1 nodes)
+
+----------------------------------------
+
+MAP01 - Entryway
+
+[DEBUG]  : LoadCharacters(): From /books/example.json
+   Loaded character:
+     [codeName = Durante, name = Dante, graphics = [[graphic=graphics/characters/dante.png, IsValid() = true]]]
+[DEBUG]  : LoadCharacters(): From /books/example.json
+   Loaded character:
+     [codeName = UlfAnderson, name = Wolf, graphics = [[graphic=graphics/characters/wolf.png, IsValid() = true]]]
+[DEBUG]  : LoadCharacters(): From /books/example.json
+   Loaded character:
+     [codeName = LionelMessi, name = Lion, graphics = [[graphic=graphics/characters/lion.png, IsValid() = true]]]
+[DEBUG]  : LoadCharacters(): From /books/example.json
+   Loaded character:
+     [codeName = Chadwick, name = Panther, graphics = [[graphic=graphics/characters/panther.png, IsValid() = true]]]
+[DEBUG]  : LoadCharacters(): From /books/example.json
+   Loaded character:
+     [codeName = VeryMouse, name = Faust, graphics = [[graphic=graphics/characters/faust.png, IsValid() = true][graphic=graphics/characters/faust_goofy.png, IsValid() = true]]]
+[DEBUG]  : LoadBook(): From /books/example.json
+   Loaded Page 1:
+     [sound = S001B-01, music = , text = Do you see now? You can't run from us., time = 105, directives(characters) size = 1, bg = [graphic=graphics/bg/black.png, IsValid() = true]]]
+[DEBUG]  : LoadBook(): From /books/example.json
+   Loaded Page 2:
+     [sound = , music = , text = You dare... interrupt me just as I was engraving the Yummer... You must be out of your..., time = 210, directives(characters) size = 1, bg = [graphic=, IsValid() = false]]]
+[DEBUG]  : LoadBook(): From /books/example.json
+   Loaded Page 3:
+     [sound = S001B-03, music = , text = Ah~ If we're being technical, what our master has planned apparently isn't one of the City's taboos., time = 210, directives(characters) size = 1, bg = [graphic=, IsValid() = false]]]
+[DEBUG]  : LoadBook(): From /books/example.json
+   Loaded Page 4:
+     [sound = S001B-04, music = , text = It's just the kind of thing that... no one has ever dared to consider, you catch my drift?, time = 140, directives(characters) size = 1, bg = [graphic=, IsValid() = false]]]
+[DEBUG]  : LoadBook(): From /books/example.json
+   Loaded Page 5:
+     [sound = S001B-05, music = , text = Huh, would you look at that..., time = 105, directives(characters) size = 1, bg = [graphic=, IsValid() = false]]]
+[DEBUG]  : LoadBook(): From /books/example.json
+   Loaded Page 6:
+     [sound = S001B-06, music = , text = Nah bro just exchanged the head so swiftly what the hellings, time = 210, directives(characters) size = 1, bg = [graphic=graphics/bg/dark_forest.png, IsValid() = true]]]
+[DEBUG]  : LoadBook(): From /books/example.json
+   Loaded Page 7:
+     [sound = , music = , text = Knigh... Just wait 'til I get the Yummer... You'll be no match for my..., time = 210, directives(characters) size = 1, bg = [graphic=, IsValid() = false]]]
+[DEBUG]  : LoadBook(): From /books/example.json
+   Loaded Page 8:
+     [sound = S001B-09, music = , text = This mf is just ticking bruh, time = 245, directives(characters) size = 1, bg = [graphic=, IsValid() = false]]]
+[DEBUG]  : LoadBook(): From /books/example.json
+   Loaded Page 9:
+     [sound = S001B-32, music = , text = Holy shit it's the Lim'bus', time = 35, directives(characters) size = 1, bg = [graphic=, IsValid() = false]]]
+[WARNING]  : LoadBooks(): At Page 10: Property CG's graphic is not valid. Make sure you input correct directory or the graphic's file is there
+[DEBUG]  : LoadBook(): From /books/example.json
+   Loaded Page 10:
+     [sound = S001B-46, music = , text = Holy shit it's Dante from Divine Comedy, time = 175, directives(characters) size = 1, bg = [graphic=, IsValid() = false]]]
+[DEBUG]  : LoadBook(): From /books/example.json
+   Loaded Page 11:
+     [sound = S001B-47, music = , text = Follow your star., time = 105, directives(characters) size = 1, bg = [graphic=graphics/bg/black.png, IsValid() = true]]]
+[DEBUG]  : LoadBook(): From /books/example.json
+   Loaded book:
+     Test
+[DEBUG]  : GoNextPage() : Current Stage Setup
+    Characters size = 1
+    Speakers = 
+    timerCoeff = 0.36190
+    text = "000001ef428e8bf0"
+[DEBUG]  : InputProcess.GoNextPage : Proceeding to next page
+[DEBUG]  : InputProcess.GoNextPage : Proceeding to next page
+[DEBUG]  : GoNextPage() : Current Stage Setup
+    Characters size = 2
+    Speakers = 
+    timerCoeff = 0.42381
+    text = "000001ef428e8fb0"
+[DEBUG]  : InputProcess.GoNextPage : Proceeding to next page
+[DEBUG]  : InputProcess.GoNextPage : Proceeding to next page
+[DEBUG]  : GoNextPage() : Current Stage Setup
+    Characters size = 3
+    Speakers = 
+    timerCoeff = 0.47619
+    text = "000001ef428e9070"
+[DEBUG]  : InputProcess.GoNextPage : Proceeding to next page
+[DEBUG]  : InputProcess.GoNextPage : Proceeding to next page
+[DEBUG]  : GoNextPage() : Current Stage Setup
+    Characters size = 3
+    Speakers = 
+    timerCoeff = 0.64286
+    text = "000001ef431e42f0"
+[DEBUG]  : InputProcess.GoNextPage : Proceeding to next page
+[DEBUG]  : InputProcess.GoNextPage : Proceeding to next page
+[DEBUG]  : GoNextPage() : Current Stage Setup
+    Characters size = 3
+    Speakers = 
+    timerCoeff = 0.28571
+    text = "000001ef431e4170"
+[DEBUG]  : InputProcess.GoNextPage : Proceeding to next page
+[DEBUG]  : InputProcess.GoNextPage : Proceeding to next page
+[DEBUG]  : GoNextPage() : Current Stage Setup
+    Characters size = 1
+    Speakers = 
+    timerCoeff = 0.28571
+    text = "000001ef431e53f0"
+[DEBUG]  : InputProcess.GoNextPage : Proceeding to next page
+[DEBUG]  : InputProcess.GoNextPage : Proceeding to next page
+[DEBUG]  : GoNextPage() : Current Stage Setup
+    Characters size = 2
+    Speakers = 
+    timerCoeff = 0.34286
+    text = "000001ef431e6930"
+[DEBUG]  : InputProcess.GoNextPage : Proceeding to next page
+[DEBUG]  : InputProcess.GoNextPage : Proceeding to next page
+[DEBUG]  : GoNextPage() : Current Stage Setup
+    Characters size = 2
+    Speakers = 
+    timerCoeff = 0.11429
+    text = "000001ef431e7030"
+[DEBUG]  : InputProcess.GoNextPage : Proceeding to next page
+[DEBUG]  : InputProcess.GoNextPage : Proceeding to next page
+[DEBUG]  : GoNextPage() : CurCG -> [graphic=graphics/cg/s0_1_4.png, IsValid() = true]pos = (0.50000, 0.50000), size = (0.80000, 0.80000), pivot = 18, fadeIn = 35, fadeOut = 0, alpha = 1.00000]
+[DEBUG]  : GoNextPage() : Current Stage Setup
+    Characters size = 1
+    Speakers = 
+    timerCoeff = 0.77143
+    text = "000001ef431e85b0"
+[DEBUG]  : InputProcess.GoNextPage : Proceeding to next page
+[DEBUG]  : InputProcess.GoNextPage : Proceeding to next page
+[DEBUG]  : GoNextPage() : CurCG -> [graphic=graphics/cg/s0_1_4.png, IsValid() = true]pos = (0.50000, 0.50000), size = (0.80000, 0.80000), pivot = 18, fadeIn = 35, fadeOut = 70, alpha = 1.00000]
+[DEBUG]  : GoNextPage() : Current Stage Setup
+    Characters size = 1
+    Speakers = 
+    timerCoeff = 0.22286
+    text = "000001ef431e84f0"
+[DEBUG]  : CG 0 is gone

@@ -21,7 +21,7 @@
             {
                 "BG":"Graphics/Error/bg.png",
                 "Sound":"GZNerror",
-                "Text":"An error occured while loading a book. Please check the console log. dsaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "Text":"An error occured while loading a book. Please check the console log. An error occured while loading a book. Please check the console log.",
                 "Time":105,
                 "TextPivot":["Middle", "Center"],
                 "Characters":

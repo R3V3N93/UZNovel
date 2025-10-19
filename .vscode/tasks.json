@@ -20,7 +20,7 @@
             "args": [
                 "-file",
                 "\"${workspaceFolder}\"",
-                "+logfile \"${workspaceFolder}\\log\\log.txt\"",
+                "+logfile","\"${workspaceFolder}\\log\\log.txt\"",
             ],
             "command": "\"C:\\VKDoom\\vkdoom.exe\" ",
             "problemMatcher": []

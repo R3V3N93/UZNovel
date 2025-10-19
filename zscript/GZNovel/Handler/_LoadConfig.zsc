@@ -22,7 +22,7 @@ extend class GZNovelHandler
         int lump = Wads.CheckNumForFullName("/UZNINFO.json"); // NO MORE GZNINFO!!!
         if(lump == -1)
         {
-            Debug.LogWarning("LoadConfig() : Could not load json named \cfGZNINFO");
+            Debug.LogWarning("LoadConfig() : Could not load json named \cfUZNINFO.json");
             return;
         }
 
@@ -77,18 +77,13 @@ extend class GZNovelHandler
             for(int i = 0; i < speakerPivotJson.Size(); i++)
             {
                 string item = JsonString(speakerPivotJson.Get(i)).s;
-                if(item == "Left")
-                    config.speakerPivot |= PIVOT_LEFT;
-                if(item == "Center")
-                    config.speakerPivot |= PIVOT_CENTER;
-                if(item == "Right")
-                    config.speakerPivot |= PIVOT_RIGHT;
-                if(item == "Top")
-                    config.speakerPivot |= PIVOT_TOP;
-                if(item == "Middle")
-                    config.speakerPivot |= PIVOT_MIDDLE;
-                if(item == "Bottom")
-                    config.speakerPivot |= PIVOT_BOTTOM;
+                
+                if(item == "Left")   config.speakerPivot |= PIVOT_LEFT;
+                if(item == "Center") config.speakerPivot |= PIVOT_CENTER;
+                if(item == "Right")  config.speakerPivot |= PIVOT_RIGHT;
+                if(item == "Top")    config.speakerPivot |= PIVOT_TOP;
+                if(item == "Middle") config.speakerPivot |= PIVOT_MIDDLE;
+                if(item == "Bottom") config.speakerPivot |= PIVOT_BOTTOM;
             }
         }
 
@@ -104,6 +99,6 @@ extend class GZNovelHandler
         
         config.isSetup = true;
 
-        Debug.LogDebug("LoadConfig(): Loaded Configuratiion:\n    Virtual Resolution : "..config.virtualResolution.."\n    Font : "..(fontJson == null ? "CONFONT": fontJson.s).."\n    DialogueBG : "..config.dialogueBG.."\n    textBox_TopLeft = "..config.textBox_TopLeft.."\n    textBox_BottomRight = "..config.textBox_BottomRight.."\n    maxLen = "..config.maxLen.."\n    "..config.speakerPos.."\n    "..config.dialogueTextSize.."\n    "..config.speakerTextSize);
+        console.printf("LoadConfig(): Loaded Configuratiion:\n    Virtual Resolution : "..config.virtualResolution.."\n    Font : "..(fontJson == null ? "CONFONT": fontJson.s).."\n    DialogueBG : "..config.dialogueBG.."\n    textBox_TopLeft = "..config.textBox_TopLeft.."\n    textBox_BottomRight = "..config.textBox_BottomRight.."\n    maxLen = "..config.maxLen.."\n    "..config.speakerPos.."\n    "..config.dialogueTextSize.."\n    "..config.speakerTextSize);
     }
 }

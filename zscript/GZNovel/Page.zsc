@@ -7,12 +7,26 @@ class CG
     int pivot;
     int fadeIn;
     int fadeOut;
-    int remove;
+    double alpha;
 
     static CG Create()
     {
         CG temp = new('CG');
         return temp;
+    }
+
+    string Serialize()
+    {
+        string s = "[";
+        s.AppendFormat("graphic="..Texman.GetName(graphic)..", IsValid() = "..(graphic.IsValid() ? "true" : "false").."]");
+        s.AppendFormat("pos = "..pos..", ");
+        s.AppendFormat("size = "..size..", ");
+        s.AppendFormat("pivot = "..pivot..", ");
+        s.AppendFormat("fadeIn = "..fadeIn..", ");
+        s.AppendFormat("fadeOut = "..fadeOut..", ");
+        s.AppendFormat("alpha = "..alpha.."]");
+
+        return s;
     }
 }
 
@@ -36,7 +50,7 @@ class Directive
 class Page play 
 {
     TextureID bg;
-    CG cg;
+    Array<CG> cg;
     string sound;
     string music;
     string text;
@@ -63,8 +77,8 @@ class Page play
         s.AppendFormat("directives(characters) size = "..directives.Size()..", ");
         s.AppendFormat("bg = [");
         s.AppendFormat("graphic="..Texman.GetName(bg)..", IsValid() = "..(bg.IsValid() ? "true" : "false").."]");
-        s.AppendFormat("cg = [");
-        s.AppendFormat("graphic="..Texman.GetName(cg.graphic)..", IsValid() = "..(cg.graphic.IsValid() ? "true" : "false").."]");
+        //s.AppendFormat("cg = [");
+        //s.AppendFormat("graphic="..Texman.GetName(cg.graphic)..", IsValid() = "..(cg.graphic.IsValid() ? "true" : "false").."]");
         s.AppendFormat("]]");
 
         return s;

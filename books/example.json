@@ -67,6 +67,7 @@
             },
             {
                 "Text":"You dare... interrupt me just as I was engraving the Yummer... You must be out of your...",
+                "TextPivot":["Middle", "Center"],
                 "Time":210,
                 "Characters":
                 [
@@ -165,10 +166,14 @@
             {
                 "Text":"Holy shit it's the Lim'bus'",
                 "CG":
-                {
-                    "Graphic":"Graphics/cg/S0_1_4.png",
-                    "Size":[0.8, 0.8]
-                },
+                [
+                    {
+                        "id":1,
+                        "Graphic":"Graphics/cg/S0_1_4.png",
+                        "Size":[0.8, 0.8],
+                        "FadeIn":35
+                    }
+                ],
                 "Sound":"S001B-32",
                 "Time":35,
                 "Remove":["__ALL__"],
@@ -184,6 +189,13 @@
             {
                 "Text":"Holy shit it's Dante from Divine Comedy",
                 "Sound":"S001B-46",
+                "CG":
+                [
+                    {
+                        "id":1,
+                        "FadeOut":70
+                    }
+                ],
                 "Time":175,
                 "Remove":["__ALL__"],
                 "Highlight":["Faust"],

@@ -56,7 +56,6 @@
                         "Pivot":["Center", "Middle"],
                         "FadeIn":35,
                         "FadeOut":35,
-                        "Remove":null // the value of Remove key is not important. The only thing matters is its existence, so technically you can put any value in this key. But for consistency and to be brief, null is recommended.
                     }
                 ],
                 "Sound":"sfx to play",

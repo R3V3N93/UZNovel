@@ -1,5 +1,17 @@
 extend class GZNovelHandler
 {
+
+    CG FindCGfromStage(int id)
+    {
+        for(int i = 0; i < stage.cg.Size(); i++)
+        {
+            if(stage.cg[i].id == id)
+                return stage.cg[i];
+        }
+
+        return null;
+    }
+
     void GoNextPage(int page = -1) 
     {
         if(page != -1) // this is placed here in order to initialize books in StartBook()
@@ -37,18 +49,12 @@ extend class GZNovelHandler
         if(curRealPage.bg.IsValid())
             stage.bg = curRealPage.bg;
 
-        if(curRealPage.textPivot & PIVOT_LEFT)
-            stage.textPos.x = config.textBox_TopLeft.x;
-        if(curRealPage.textPivot & PIVOT_CENTER)
-            stage.textPos.x = (config.textBox_TopLeft.x + config.textBox_BottomRight.x) / 2.0;
-        if(curRealPage.textPivot & PIVOT_RIGHT)
-            stage.textPos.x = config.textBox_BottomRight.x;
-        if(curRealPage.textPivot & PIVOT_TOP)
-            stage.textPos.y = config.textBox_TopLeft.y;
-        if(curRealPage.textPivot & PIVOT_MIDDLE)
-            stage.textPos.y = (config.textBox_TopLeft.y + config.textBox_BottomRight.y) / 2.0;
-        if(curRealPage.textPivot & PIVOT_BOTTOM)
-            stage.textPos.y = config.textBox_BottomRight.y;
+        if(curRealPage.textPivot & PIVOT_LEFT)   stage.textPos.x = config.textBox_TopLeft.x;
+        if(curRealPage.textPivot & PIVOT_CENTER) stage.textPos.x = (config.textBox_TopLeft.x + config.textBox_BottomRight.x) / 2.0;
+        if(curRealPage.textPivot & PIVOT_RIGHT)  stage.textPos.x = config.textBox_BottomRight.x;
+        if(curRealPage.textPivot & PIVOT_TOP)    stage.textPos.y = config.textBox_TopLeft.y;
+        if(curRealPage.textPivot & PIVOT_MIDDLE) stage.textPos.y = (config.textBox_TopLeft.y + config.textBox_BottomRight.y) / 2.0;
+        if(curRealPage.textPivot & PIVOT_BOTTOM) stage.textPos.y = config.textBox_BottomRight.y;
 
         // Remove
         if(curRealPage.remove.Size() > 0)
@@ -63,6 +69,26 @@ extend class GZNovelHandler
                 if(curRealPage.remove.Find(stage.characters[j].codeName) != curRealPage.remove.Size())
                     stage.characters.Delete(j);
             }
+        }
+
+        for(int i = 0; i < curRealPage.cg.Size(); i++)
+        {
+            CG curCG = FindCGFromStage(curRealPage.cg[i].id);
+            if(!curCG)
+            {
+                curCG = CG.Create();
+                curCG.id = curRealPage.cg[i].id;
+                stage.cg.Push(curCG);
+            }
+            
+            if(!curCG.graphic.IsValid())    curCG.graphic = curRealPage.cg[i].graphic;
+            if(curCG.pos.Length() <= 0.0)   curCG.pos = curRealPage.cg[i].pos;
+            if(curCG.size.Length() <= 0.0)  curCG.size = curRealPage.cg[i].size;
+            if(curCG.pivot == 0)             curCG.pivot = curRealPage.cg[i].pivot;
+            if(curCG.fadeIn <= 0.0)           curCG.fadeIn = curRealPage.cg[i].fadeIn;
+            if(curCG.fadeOut <= 0.0)      {  curCG.fadeOut = curRealPage.cg[i].fadeOut; curCG.alpha = 1.0;}
+
+            Debug.LogDebug("GoNextPage() : CurCG -> "..curCG.Serialize());
         }
 
         for(int i = 0; i < curRealPage.directives.Size(); i++)

@@ -28,15 +28,15 @@ Class GZNovelHandler : StaticEventHandler
         LoadConfig();
         LoadCharacters("/books/errorbook.json");
         LoadBooks("/books/errorbook.json");
-
-        LoadCharacters("/books/example.json");
-        LoadBooks("/books/example.json");
         curPage = -1;
     }
 
     override void WorldLoaded (WorldEvent e)
     {
-        StartBookString("__ERROR__BOOK__");
+        LoadCharacters("/books/example.json");
+        LoadBooks("/books/example.json");
+        StartBookString("Test");
+        //StartBookString("__ERROR__BOOK__");
     }
 
     override void WorldUnloaded (WorldEvent e)
@@ -63,7 +63,7 @@ Class GZNovelHandler : StaticEventHandler
     {
         curBook = what;
         level.SetFrozen(true);
-        S_PauseSound(false, false);
+        S_PauseSound(false, true);
         GoNextPage(0);
     }
 
@@ -82,6 +82,7 @@ Class GZNovelHandler : StaticEventHandler
         stage.text = null;
         stage.curLine = 0;
         stage.textTimer = 0;
+        stage.cg.Clear();
         S_ResumeSound(false);
         level.SetFrozen(false);
     }
@@ -105,7 +106,6 @@ Class GZNovelHandler : StaticEventHandler
 
     override void WorldTick()
     {
-        config.maxLen = (config.textBox_BottomRight.x - config.textBox_TopLeft.x) * Screen.GetWidth();
         if(IsInBook())
         {
             if(stage.curLine == stage.text.Count())
@@ -116,6 +116,29 @@ Class GZNovelHandler : StaticEventHandler
             {
                 stage.textTimer = 0.0;
                 stage.curLine++;
+            }
+
+            for(int i = 0; i < stage.cg.Size(); i++)
+            {
+                CG curCG = stage.cg[i];
+                double fadeCoeff = 0.0;
+                if(curCG.fadeOut > 0.0)
+                {
+                    if(curCG.alpha <= 0.0)
+                    {
+                        Debug.LogDebug("CG "..curCG.id.." is gone");
+                        stage.cg.Delete(i);
+                        continue;
+                    }
+                    //console.printf(""..curCG.fadeOut);
+                    fadeCoeff = -1.0 / (curCG.fadeOut == 0 ? 1.0 : curCG.fadeOut * 1.0);
+                }
+                else
+                    fadeCoeff = 1.0 / (curCG.fadeIn == 0 ? 1.0 : curCG.fadeIn * 1.0);
+
+                //console.printf(""..fadeCoeff.." "..curCG.alpha);
+
+                curCG.alpha += fadeCoeff;
             }
         }
     }
@@ -129,7 +152,7 @@ Class GZNovelHandler : StaticEventHandler
                 if(bindings.GetBinding(e.KeyScan) == "+attack")
                 {
                     Debug.LogDebug("InputProcess.GoNextPage : Proceeding to next page");
-        s           if(stage.curLine < stage.text.Count())
+                    if(stage.curLine < stage.text.Count())
                         stage.curLine = stage.text.Count();
                     else
                         EventHandler.SendNetworkEvent("GoNextPage");
@@ -163,9 +186,9 @@ Class GZNovelHandler : StaticEventHandler
             GZN_DrawImage(stage.bg, (0.0, 0.0));
 
             // CG
-            if(curRealPage.cg.graphic.IsValid())
+            for(int i = 0; i < stage.cg.Size(); i++)
             {
-                GZN_DrawImage(curRealPage.cg.graphic, curRealPage.cg.pos, pivot:curRealPage.cg.pivot, size:curRealPage.cg.size);
+                GZN_DrawImage(stage.cg[i].graphic, stage.cg[i].pos, pivot:stage.cg[i].pivot, size:stage.cg[i].size, alpha:stage.cg[i].alpha);
             }
 
             // Characters
