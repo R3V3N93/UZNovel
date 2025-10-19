@@ -1,4 +1,4 @@
 gameinfo
 {
-    AddEventHandlers = "DebugInfo", "GZNovelHandler"
+    AddEventHandlers = "DebugInfo", "UZNovelHandler"
 }

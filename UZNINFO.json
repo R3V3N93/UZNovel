@@ -8,6 +8,7 @@
         "SpeakerPosition":[0.2, 0.825],
         "SpeakerPivot":["Left", "Middle"],
         "DialogueTextSize":0.5,
-        "SpeakerTextSize":1.5
+        "SpeakerTextSize":1.5,
+        "AutoReadGapTime":35
     }
 }

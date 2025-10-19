@@ -1,0 +1,9 @@
+class UZNovel play
+{
+    static void LoadBooks(string fileName)           { UZNovelHandler.Get().LoadBooks(fileName); }
+    static void LoadCharacters(string fileName)      { UZNovelHandler.Get().LoadCharacters(fileName); }
+    static void UnloadBookFile(string filename)      { UZNovelHandler.Get().UnloadBookFile(fileName); }
+    static void UnloadCharacterFile(string filename) { UZNovelHandler.Get().UnloadCharacterFile(fileName); }
+    static void StartBook(string bookname)           { UZNovelHandler.Get().StartBook(bookName); }
+    static void EndBook()                            { UZNovelHandler.Get().EndBook(); }
+}

@@ -54,6 +54,7 @@
             {
                 "BG":"graphics/bg/black.png",
                 "Text":"Do you see now? You can't run from us.",
+                "Music":"LIMBUSSY",
                 "Sound":"S001B-01",
                 "Time":105,
                 "Characters":
@@ -193,6 +194,8 @@
                 [
                     {
                         "id":1,
+                        "Graphic":"Graphics/cg/S0_1_4.png",
+                        "Size":[0.8, 0.8],
                         "FadeOut":70
                     }
                 ],

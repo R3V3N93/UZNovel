@@ -1,0 +1,257 @@
+struct Stage
+{
+    Array<Character> characters;
+    Array<CG> cg;
+    TextureID bg;
+    string speakers; // Volatile
+    double timerCoeff; // Volatile
+    BrokenLines text; // Volatile
+    int curLine; // Volatile
+    double textTimer; // Volatile
+    Vector2 textPos; // Volatile
+    int autoReadtimer;
+
+    string prevMusic;
+}
+
+Class UZNovelHandler : StaticEventHandler
+{
+    Stage stage;
+    Book curBook;
+    int curPage;
+    private GZNConfig config;
+
+    Array<Character> characters;
+    Array<Book> books;
+
+    private Book _ErrorBook;
+
+    override void OnRegister()
+    {
+        LoadConfig();
+        LoadCharacters("/books/errorbook.json");
+        LoadBooks("/books/errorbook.json");
+        curPage = -1;
+    }
+
+    override void WorldLoaded (WorldEvent e)
+    {
+        //LoadCharacters("/books/example.json");
+        //LoadBooks("/books/example.json");
+        //StartBook("Test");
+    }
+
+    override void WorldUnloaded (WorldEvent e)
+    {
+        if(IsInBook())
+            EndBook();
+    }
+
+    static UZNovelHandler Get()
+    {
+        return UZNovelHandler(StaticEventHandler.Find('UZNovelHandler'));
+    }
+    
+    Book FindBook(string what)
+    {
+        for(int i = 0; i < books.Size(); i++)
+        {
+            if(books[i].name == what)
+                return books[i];
+        }
+        return null;
+    }
+
+    void StartBook(string what) 
+    {
+        Book bookToRead = FindBook(what);
+        if(!bookToRead)
+        {
+            Debug.LogWarning("StartBook() : Could not find book \cf"..what.."\c-. Loading Error Book instead.");
+            bookToRead = FindBook("__ERROR__BOOK__");
+        }
+        curBook = bookToRead;
+        level.SetFrozen(true);
+        S_PauseSound(false, true);
+        stage.prevMusic = level.music;
+        GoNextPage(0);
+    }
+
+    void EndBook() 
+    {
+        curBook = null;
+        curPage = -1;
+        stage.characters.Clear();
+        stage.speakers = "";
+        stage.timerCoeff = 0.0;
+        stage.text = null;
+        stage.curLine = 0;
+        stage.textTimer = 0;
+        stage.cg.Clear();
+        S_ResumeSound(false);
+        S_ChangeMusic(stage.prevMusic);
+        players[0].mo.A_StartSound("", 1, CHANF_LOOP);
+        level.SetFrozen(false);
+    }
+
+    clearscope bool IsInBook()
+    {
+        if(curBook != null && curPage >= 0)
+            return true;
+        return false;
+    }
+
+    Character FindCharacter(string codeName)
+    {
+        for(int i = 0; i < characters.Size(); i++) // I REALLY need to study some algorhithm bullshits to minimize such simple for loop parsing.
+        {
+            if(characters[i].codeName == codeName)
+                return characters[i];
+        }
+        return null;
+    }
+
+    override void WorldTick()
+    {
+        if(IsInBook())
+        {
+            if(stage.curLine == stage.text.Count())
+            {
+                CVar autoReadCvar = CVar.GetCVar("cl_uznovel_autoread", players[ConsolePlayer]);
+                if(autoReadCvar)
+                {
+                    if(autoReadCvar.GetBool())
+                    {
+                        stage.autoReadtimer++;
+
+                        if(stage.autoReadtimer >= config.autoReadGap)
+                        {
+                            stage.autoReadtimer = 0;
+                            GoNextPage();
+                        }
+                    }
+                }
+                return;
+            }
+                
+
+            stage.textTimer += stage.timerCoeff;
+            if(int(stage.textTimer) > stage.text.StringAt(stage.curLine).Length())
+            {
+                stage.textTimer = 0.0;
+                stage.curLine++;
+            }
+
+            for(int i = 0; i < stage.cg.Size(); i++)
+            {
+                CG curCG = stage.cg[i];
+                if(curCG.fadeOut < 0.0)
+                {
+                    if(curCG.alpha <= 0.0)
+                    {
+                        Debug.LogDebug("CG "..curCG.id.." is gone");
+                        stage.cg.Delete(i);
+                        continue;
+                    }
+                    curCG.alpha += curCG.fadeOut;
+                }
+                else
+                {
+                    curCG.alpha += curCG.fadeIn;
+
+                    if(curCg.alpha > 1.0)
+                        curCg.alpha = 1.0;
+                }
+
+                //console.printf(""..curCG.alpha.." "..curCG.fadeIn.." "..curCG.fadeOut)    ;                
+            }
+        }
+    }
+
+    override bool InputProcess (InputEvent e)
+    {
+        if(IsInBook())
+        {
+            if(e.type == e.Type_KeyDown)
+            {
+                if(bindings.GetBinding(e.KeyScan) == "+attack")
+                {
+                    Debug.LogDebug("InputProcess.GoNextPage : Proceeding to next page");
+
+                    for(int i = 0; i < stage.cg.Size(); i++)
+                    {
+                        stage.cg[i].alpha = 1.0;
+                        if(stage.cg[i].fadeOut < 0.0)
+                            stage.cg[i].alpha = 0.0;
+                    }
+
+                    if(stage.curLine < stage.text.Count())
+                        stage.curLine = stage.text.Count();
+                    else
+                        EventHandler.SendNetworkEvent("GoNextPage");
+                }
+            }
+        }
+        return false;
+    }
+
+    override void NetworkProcess(ConsoleEvent e)
+    {
+        Array<String> args;
+        e.name.split(args, "|");
+        if(args[0] == "GoNextPage")
+            GoNextPage();
+    }
+
+    override void RenderOverlay (RenderEvent e)
+    {
+        if(IsInBook())
+        {
+            if(!config.isSetup)
+            {
+                Debug.LogWarning("GZNovel is not setup properly! Please check your \cfGZNINFO.json\c- again!");
+                return;
+            }
+
+            Page curRealPage = curBook.pages[curPage];
+
+            // BG
+            GZN_DrawImage(stage.bg, (0.0, 0.0));
+
+            // CG
+            for(int i = 0; i < stage.cg.Size(); i++)
+            {
+                GZN_DrawImage(stage.cg[i].graphic, stage.cg[i].pos, pivot:stage.cg[i].pivot, size:stage.cg[i].size, alpha:stage.cg[i].alpha);
+            }
+
+            // Characters
+            for(int i = 0; i < stage.characters.Size(); i++)
+            {
+                Character curCharacter = stage.characters[i];
+                GZN_DrawImage(curCharacter.curGraphic, (curCharacter.pos, 1.0), highlight : curCharacter.IsHighlight, size:curCharacter.size);
+            }
+
+            if(stage.text.Count() > 0) {
+
+            // Dialogue box
+            GZN_DrawImage(config.dialogueBG, (0.5, 1.0));
+
+            // Speaker
+            GZN_DrawText(stage.speakers, config.speakerPos, pivot:config.speakerPivot, size:(config.speakerTextSize, config.speakerTextSize));
+
+            // Dialogue text
+            for(int i = 0; i < stage.text.Count(); i++)
+            {
+                //console.printf(stage.text.StringAt(i).." "..stage.text.Count().." "..stage.curLine);
+                if(i > stage.curLine)
+                    continue;
+
+                if(i < stage.curLine)
+                    GZN_DrawText(stage.text.StringAt(i), stage.textPos, line : i, pivot:curRealPage.textPivot, size:(config.dialogueTextSize, config.dialogueTextSize));
+                else
+                    GZN_DrawText(stage.text.StringAt(i).Left(int(stage.textTimer)), stage.textPos, line : i, pivot:curRealPage.textPivot, size:(config.dialogueTextSize, config.dialogueTextSize));
+            }
+            }
+        }
+    }
+}

@@ -1,0 +1,80 @@
+extend class UZNovelHandler
+{
+    enum PIVOT
+    {
+        PIVOT_LEFT = 1,
+        PIVOT_CENTER = 1<<1,
+        PIVOT_RIGHT = 1<<2,
+        PIVOT_TOP = 1<<3,
+        PIVOT_MIDDLE = 1<<4,
+        PIVOT_BOTTOM = 1<<5,
+    }
+    
+    ui void GZN_DrawImage(TextureID tex, Vector2 pos, int pivot = PIVOT_LEFT|PIVOT_TOP, Vector2 size = (1.0, 1.0), bool highlight = true, double alpha = 1.0)
+    {
+        Vector2 texSize;
+        Vector2 realPos;
+        [texSize.x, texSize.y] = Texman.GetSize(tex);
+        texSize = (texSize.x * size.x, texSize.y * size.y);
+
+        realPos = (pos.x * config.virtualResolution.x, pos.y * config.virtualResolution.y);
+
+        if(pivot & PIVOT_CENTER)
+            realPos.x -= texSize.x / 2.0;
+        if(pivot & PIVOT_RIGHT)
+            realPos.x -= texSize.x;
+        if(pivot & PIVOT_MIDDLE)
+            realPos.y -= texSize.y / 2.0;
+        if(pivot & PIVOT_BOTTOM)
+            realPos.y -= texSize.y;
+
+        Screen.DrawTexture(
+            tex: tex,
+            animate: true,
+            x: realPos.x, 
+            y: realPos.y,
+            DTA_Alpha, alpha,
+            DTA_VirtualWidthF, config.virtualResolution.x,
+            DTA_VirtualheightF, config.virtualResolution.y,
+            DTA_ScaleX, size.x,
+            DTA_ScaleY, size.y,
+            DTA_KeepRatio, true,
+            DTA_ColorOverlay, (highlight ? 0x00000000 : 0x9B000000)
+        );
+    }
+
+    ui void GZN_DrawText(string text, Vector2 pos, int line = 0, int pivot = PIVOT_CENTER|PIVOT_MIDDLE, Vector2 size = (1.0, 1.0))
+    {
+        string localized = StringTable.Localize(text);
+
+        Vector2 textSize = (config.font.StringWidth(text), config.Font.GetHeight());
+        Vector2 realPos;
+        //console.printf(""..textSize);
+        textSize = (textSize.x * size.x, textSize.y * size.y); // I'm still not sure why I don't have to multiply virtual ratio. Probably I'm missing a logic here
+        
+
+        realPos = (pos.x * config.virtualResolution.x, pos.y * config.virtualResolution.y) + (0, textSize.y * line);
+
+        if(pivot & PIVOT_CENTER)
+            realPos.x -= textSize.x / 2.0;
+        if(pivot & PIVOT_RIGHT)
+            realPos.x -= textSize.x;
+        if(pivot & PIVOT_MIDDLE)
+            realPos.y -= textSize.y / 2.0;
+        if(pivot & PIVOT_BOTTOM)
+            realPos.y -= textSize.y;
+
+        Screen.DrawText(
+            font: config.font,
+            normalcolor: Font.CR_UNTRANSLATED,
+            x: realPos.x, 
+            y: realPos.y,
+            text:localized,
+            DTA_VirtualWidthF, config.virtualResolution.x,
+            DTA_VirtualheightF, config.virtualResolution.y,
+            DTA_ScaleX, size.x,
+            DTA_ScaleY, size.y,
+            DTA_KeepRatio, true
+        );
+    }
+}

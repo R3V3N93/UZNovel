@@ -1,0 +1,120 @@
+extend class UZNovelHandler
+{
+    void UnloadBook(string what) 
+    {
+        Debug.LogDebug("UnloadBook() : Book "..what.." unloaded");
+        // This is incredibly stupid.
+        // It's like a sandwich of parsing and parsing.
+        // Waste of resource, but I'm out of time.
+        int index = books.Find(FindBook(what));
+        if(index == books.Size())
+            return;
+            
+        books.Delete(index); 
+    }
+
+    void UnloadCharacter(string what) 
+    {
+        Debug.LogDebug("UnloadCharacter() : Character "..what.." unloaded");
+        int index = characters.Find(FindCharacter(what));
+        if(index == characters.Size())
+            return;
+            
+        characters.Delete(index); 
+    }
+
+    void UnloadBookFile(string what) 
+    {
+        int lump = Wads.CheckNumForFullName(what);
+        if(lump == -1)
+        {
+            Debug.LogWarning("UnloadBookFile() : Could not load json named \cf"..what);
+            return;
+        }
+
+        JsonElementOrError data = JSON.parse(Wads.ReadLump(lump),false);
+		if(data is "JsonError")
+        {
+			Debug.Throw("UnloadBookFile(): "..JsonError(data).what);
+		}
+
+        // Deserialize
+        JsonObject obj = JsonObject(JsonElement(data));
+
+        JsonElement bookArrElm = obj.get("Books");
+        if(!bookArrElm)
+        {
+            JsonElement ThisMFmisspelledCharactersFfs = obj.get("Book"); 
+            Debug.Throw("UnloadBookFile(): Could not find array \cfBooks\c-."..(ThisMFmisspelledCharactersFfs ? "\nIntead, \cfBook\c- is found. Did you forget to \cfwrite extra s?\c-" : ""));
+        }
+        JsonArray bookArr = JsonArray(bookArrElm);
+
+        if(!bookArr)
+            Debug.Throw("UnloadBookFile(): Element \cfBooks\c- is found but it is not \cfArray\c-, but "..bookArrElm.GetClassName());
+        
+        Array<string> booksToShred;
+        for(uint i = 0; i < bookArr.size(); i++)
+        {
+            JsonElement item = bookArr.get(i);
+            JsonObject bookObj = JsonObject(item);
+            JsonString nameJson = JsonString(bookObj.get("Name"));
+            if(!nameJson) Debug.Throw("UnloadBookFile(): At Book "..(i+1).." : Property \cfName\c- is not present, or type is not \cfstring\c-");
+            
+            booksToShred.Push(nameJson.s);
+        }
+        
+        foreach(a : booksToShred)
+            UnloadBook(a);
+    }
+
+    void UnloadCharacterFile(string what) 
+    {
+        // Obtain the file
+
+        int lump = Wads.CheckNumForFullName(what);
+        if(lump == -1)
+        {
+            Debug.LogWarning("UnloadCharacter() : Could not load json named \cf"..what);
+            return;
+        }
+
+        JsonElementOrError data = JSON.parse(Wads.ReadLump(lump),false);
+		if(data is "JsonError")
+        {
+			Debug.Throw("UnloadCharacter(): "..JsonError(data).what);
+		}
+
+        // Deserialize
+
+        JsonObject obj = JsonObject(JsonElement(data));
+
+        JsonElement charArrElm = obj.get("Characters");
+        if(!charArrElm)
+        {
+            JsonElement ThisMFmisspelledCharactersFfs = obj.get("Character"); 
+            Debug.Throw("UnloadCharacter(): Could not find array \cfCharacters\c-."..(ThisMFmisspelledCharactersFfs ? "\nIntead, \cfCharacter\c- is found. Did you forget to \cfwrite extra s?\c-" : ""));
+        }
+        JsonArray charArr = JsonArray(charArrElm);
+
+        if(!charArr)
+            Debug.Throw("UnloadCharacter(): Element \cfCharacters\c- is found but it is not \cfArray\c-, but "..charArrElm.GetClassName());
+        
+        Array<string> charsToShred;
+        // Obtain properties from each item
+        for(uint i = 0; i < charArr.size(); i++)
+        {
+            JsonElement item = charArr.get(i);
+            JsonObject charObj = JsonObject(item);
+
+            JsonString codeNameJson = JsonString(charObj.get("Codename"));
+
+            if(!codeNameJson)
+                Debug.Throw("LoadCharacters(): At Character "..(i+1).." : Property \cfCodename\c- is not present, or type is not \cfstring\c-");
+
+            charsToShred.Push(codeNameJson.s);
+        }
+        
+        foreach(a : charsToShred)
+            UnloadCharacter(a);
+    }
+}

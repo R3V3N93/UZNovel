@@ -1,0 +1,109 @@
+struct GZNConfig
+{
+    bool isSetup;
+    Vector2 virtualResolution;
+    Font font;
+    TextureID dialogueBG;
+    Vector2 textBox_TopLeft;
+    Vector2 textBox_BottomRight;
+    int maxLen;
+    Vector2 speakerPos;
+    double dialogueTextSize;
+    double speakerTextSize;
+    int speakerPivot;
+    int autoReadGap;
+}
+
+extend class UZNovelHandler
+{
+    void LoadConfig() 
+    {
+        // Obtain the file
+ 
+        int lump = Wads.CheckNumForFullName("/UZNINFO.json"); // NO MORE GZNINFO!!!
+        if(lump == -1)
+        {
+            Debug.LogWarning("LoadConfig() : Could not load json named \cfUZNINFO.json");
+            return;
+        }
+
+        JsonElementOrError data = JSON.parse(Wads.ReadLump(lump),false);
+		if(data is "JsonError")
+        {
+			Debug.Throw("LoadConfig(): "..JsonError(data).what);
+		}
+
+        JsonObject configObj = JsonObject(JsonObject(JsonElement(data)).Get("UZNovel")); // Retarded casings of castings. And this makes a joke, astounding.
+
+        JsonArray virtualResJson = JsonArray(configObj.Get("VirtualResolution"));
+        JsonString fontJson = JsonString(configObj.Get("Font"));
+        JsonString dialogueJson = JsonString(configObj.Get("DialogueBG"));
+        JsonArray dialTextBoxJson = JsonArray(configObj.Get("DialogueTextBox"));
+        JsonArray speakerPosBoxJson = JsonArray(configObj.Get("SpeakerPosition"));
+        JsonArray speakerPivotJson = JsonArray(configObj.Get("SpeakerPivot"));
+        JsonDouble dialTextSizeJson = JsonDouble(configObj.Get("DialogueTextSize"));
+        JsonDouble speakerTextSizeJson = JsonDouble(configObj.Get("SpeakerTextSize"));
+        JsonInt autoReadGapTimeJson = JsonInt(configObj.Get("AutoReadGapTime"));
+
+        if(!virtualResJson) config.virtualResolution = (1920, 1080);
+        else                config.virtualResolution = (JsonInt(virtualResJson.Get(0)).asInt(), JsonInt(virtualResJson.Get(1)).asInt());
+
+        if(!fontJson) config.font = confont;
+        else          config.font = Font.GetFont(fontJson.s);
+
+        if(!config.font)
+            Debug.Throw("LoadConfig() : Invalid font \cf"..fontJson.s);
+
+        if(!dialogueJson) config.dialogueBG = Texman.CheckForTexture("");
+        else              config.dialogueBG = Texman.CheckForTexture(dialogueJson.s);
+
+        if(!dialTextBoxJson)
+        {
+            config.textBox_TopLeft = (0.05, 0.78);
+            config.textBox_BottomRight = (0.95, 1.0);
+        } 
+        else  
+        {
+            JsonArray topLeftJson = JsonArray(dialTextboxJson.Get(0));
+            JsonArray bottomRightJson = JsonArray(dialTextboxJson.Get(1));
+            config.textBox_TopLeft = (JsonDouble(topLeftJson.Get(0)).asDouble(), JsonDouble(topLeftJson.Get(1)).asDouble());
+            config.textBox_BottomRight = (JsonDouble(bottomRightJson.Get(0)).asDouble(), JsonDouble(bottomRightJson.Get(1)).asDouble());
+        }   
+
+        if(!speakerPosBoxJson) config.speakerPos = (0.5, 0.8);
+        else                   config.speakerPos = (JsonDouble(speakerPosBoxJson.Get(0)).asDouble(), JsonDouble(speakerPosBoxJson.Get(1)).asDouble());
+
+        if(!speakerPivotJson) config.speakerPivot = PIVOT_CENTER|PIVOT_MIDDLE;
+        else                   
+        {
+            for(int i = 0; i < speakerPivotJson.Size(); i++)
+            {
+                string item = JsonString(speakerPivotJson.Get(i)).s;
+                
+                if(item == "Left")   config.speakerPivot |= PIVOT_LEFT;
+                if(item == "Center") config.speakerPivot |= PIVOT_CENTER;
+                if(item == "Right")  config.speakerPivot |= PIVOT_RIGHT;
+                if(item == "Top")    config.speakerPivot |= PIVOT_TOP;
+                if(item == "Middle") config.speakerPivot |= PIVOT_MIDDLE;
+                if(item == "Bottom") config.speakerPivot |= PIVOT_BOTTOM;
+            }
+        }
+
+        if(!dialTextSizeJson) config.dialogueTextSize = 1.0;
+        else                  config.dialogueTextSize = dialTextSizeJson.asDouble();
+
+        if(!speakerTextSizeJson) config.speakerTextSize = 1.0;
+        else                     config.speakerTextSize = speakerTextSizeJson.asDouble();
+
+        if(!autoReadGapTimeJson) config.autoReadGap = 35;
+        else                     config.autoReadGap = autoReadGapTimeJson.asInt();
+
+        config.maxLen = (config.textBox_BottomRight.x - config.textBox_TopLeft.x) * config.virtualResolution.x / config.dialogueTextSize;
+           
+        //console.printf(dialogueJson.s);
+        
+        config.isSetup = true;
+
+        console.printf("LoadConfig(): Loaded Configuratiion:\n    Virtual Resolution : "..config.virtualResolution.."\n    Font : "..(fontJson == null ? "CONFONT": fontJson.s).."\n    DialogueBG : "..config.dialogueBG.."\n    textBox_TopLeft = "..config.textBox_TopLeft.."\n    textBox_BottomRight = "..config.textBox_BottomRight.."\n    maxLen = "..config.maxLen.."\n    "..config.speakerPos.."\n    "..config.dialogueTextSize.."\n    "..config.speakerTextSize);
+    }
+}

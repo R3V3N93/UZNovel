@@ -1,0 +1,10 @@
+#ifdef __IMPORTED__
+	#error This file must be #included.
+#endif
+
+function void LoadBooks(str filename)           { ScriptCall("UZNovel", "LoadBooks", filename); }
+function void LoadCharacters(str filename)      { ScriptCall("UZNovel", "LoadCharacters", filename); }
+function void UnloadBookFile(str filename)      { ScriptCall("UZNovel", "UnloadBookFile", filename); }
+function void UnloadCharacterFile(str filename) { ScriptCall("UZNovel", "UnloadCharacterFile", filename); }
+function void StartBook(str bookname)           { ScriptCall("UZNovel", "StartBook", bookname); }
+function void EndBook()                         { ScriptCall("UZNovel", "EndBook"); }

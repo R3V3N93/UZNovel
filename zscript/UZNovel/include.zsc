@@ -1,0 +1,16 @@
+#include "zscript/UZNovel/lib/ZJSON/Include.zs"
+#include "zscript/UZNovel/lib/debug.zsc"
+
+#include "zscript/UZNovel/Elements/Characters.zsc"
+#include "zscript/UZNovel/Elements/Page.zsc"
+#include "zscript/UZNovel/Elements/Book.zsc"
+
+#include "zscript/UZNovel/Handler/Handler.zsc"
+#include "zscript/UZNovel/Handler/_GoNextPage.zsc"
+#include "zscript/UZNovel/Handler/_LoadBook.zsc"
+#include "zscript/UZNovel/Handler/_LoadCharacter.zsc"
+#include "zscript/UZNovel/Handler/_LoadConfig.zsc"
+#include "zscript/UZNovel/Handler/_Draws.zsc"
+#include "zscript/UZNovel/Handler/_Unload.zsc"
+
+#include "zscript/UZNovel/UZNovel.zsc"
