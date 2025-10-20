@@ -14,7 +14,7 @@ struct Stage
     string prevMusic;
 }
 
-Class UZNovelHandler : StaticEventHandler
+Class UZNovelHandler : EventHandler
 {
     Stage stage;
     Book curBook;
@@ -90,7 +90,8 @@ Class UZNovelHandler : StaticEventHandler
         stage.cg.Clear();
         S_ResumeSound(false);
         S_ChangeMusic(stage.prevMusic);
-        players[0].mo.A_StartSound("", 1, CHANF_LOOP);
+        if(players[0].mo)
+            players[0].mo.A_StartSound("", 1, CHANF_LOOP);
         level.SetFrozen(false);
     }
 
@@ -201,6 +202,14 @@ Class UZNovelHandler : StaticEventHandler
         e.name.split(args, "|");
         if(args[0] == "GoNextPage")
             GoNextPage();
+        if(args[0] == "ShowBooks")
+        {
+            console.printf("UZNovel : Currently loaded books\n    ");
+            foreach(a : books)
+            {
+                console.printf(a.name.."\n    ");
+            }
+        }
     }
 
     override void RenderOverlay (RenderEvent e)
