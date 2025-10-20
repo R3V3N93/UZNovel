@@ -4,7 +4,7 @@
 // It's totally fine. it's not even for practical use anyway, but format demonstration.
 // Byeah these red underlines are distracting af
 
-// IMPORTANT NOTE : EVERY SINGLE KEYWORD FOR JSONS ARE CASE SENSITIVE!!!!
+// IMPORTANT NOTE : EVERY SINGLE KEYWORD FOR JSONS IS CASE SENSITIVE!!!!
 
 // UZNovel block is ONLY for UZNINFO.json file, at the root of the pk3.
 // This will set the overall setting for the library.
@@ -69,7 +69,7 @@
                 "TextPivot": ["Left", "Top"],
                 "Time":1, // The timespan in which the text will be 'typed'
                 // Characters block
-                // Characters could be removed/highlighted/added/revised in this block
+                // Characters could be added/revised in this block
                 // Common rules to know:
                 //     Characters are only recognized with codenames.
                 //     For displaying characters, there is a general ``stage`` that stores currently being displayed characters in.
