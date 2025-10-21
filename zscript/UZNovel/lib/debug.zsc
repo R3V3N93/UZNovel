@@ -74,7 +74,6 @@ Class DebugInfo : EventHandler
     }
     override void WorldTick()
     {
-        debugCvar = CVar.GetCVar("cl_debug", players[ConsolePlayer]);
         debug.addInfoCategory("Test");
         debug.addInfoItem("message with tag", "Test", "tag");
         debug.addInfoItem("message without tag", "Test");
