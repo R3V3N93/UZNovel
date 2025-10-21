@@ -1,3 +1,1 @@
-user bool cl_debug = false;
-
 user bool cl_uznovel_autoread = false;
