@@ -26,25 +26,21 @@ Class UZNovelHandler : EventHandler
 
     private Book _ErrorBook;
 
+    CVar autoReadCvar;
+
     override void OnRegister()
     {
+        autoReadCvar = CVar.GetCVar("cl_uznovel_autoread", players[ConsolePlayer]);
         LoadConfig();
         LoadCharacters("/books/errorbook.json");
         LoadBooks("/books/errorbook.json");
         curPage = -1;
     }
 
-    override void WorldLoaded (WorldEvent e)
-    {
-        //LoadCharacters("/books/example.json");
-        //LoadBooks("/books/example.json");
-        //StartBook("Test");
-    }
-
     override void WorldUnloaded (WorldEvent e)
     {
-        if(IsInBook())
-            EndBook();
+        //if(IsInBook())
+        //    EndBook();
     }
 
     static UZNovelHandler Get()
@@ -118,7 +114,6 @@ Class UZNovelHandler : EventHandler
         {
             if(stage.curLine == stage.text.Count())
             {
-                CVar autoReadCvar = CVar.GetCVar("cl_uznovel_autoread", players[ConsolePlayer]);
                 if(autoReadCvar)
                 {
                     if(autoReadCvar.GetBool())
@@ -202,6 +197,7 @@ Class UZNovelHandler : EventHandler
         e.name.split(args, "|");
         if(args[0] == "GoNextPage")
             GoNextPage();
+            
         if(args[0] == "ShowBooks")
         {
             console.printf("UZNovel : Currently loaded books\n    ");
@@ -209,6 +205,8 @@ Class UZNovelHandler : EventHandler
             {
                 console.printf(a.name.."\n    ");
             }
+            if(curBook)
+                console.printf("Currently Playing Book : "..curBook.name);
         }
     }
 
