@@ -28,11 +28,19 @@ Class UZNovelHandler : EventHandler
 
     CVar autoReadCvar;
 
+    override void OnRegister()
+    {
+        autoReadCvar = CVar.GetCVar("cl_uznovel_autoread", players[ConsolePlayer]);
+        LoadConfig();
+
+        if(IsInBook())
+            GoNextPage(curPage);
+    }
+
     override void NewGame()
     {
         Debug.LogDebug("GZNOVEL : Initializing");
-        autoReadCvar = CVar.GetCVar("cl_uznovel_autoread", players[ConsolePlayer]);
-        LoadConfig();
+        
         LoadCharacters("/books/errorbook.json");
         LoadBooks("/books/errorbook.json");
         curPage = -1;
@@ -158,9 +166,7 @@ Class UZNovelHandler : EventHandler
 
                     if(curCg.alpha > 1.0)
                         curCg.alpha = 1.0;
-                }
-
-                //console.printf(""..curCG.alpha.." "..curCG.fadeIn.." "..curCG.fadeOut)    ;                
+                }               
             }
         }
     }
