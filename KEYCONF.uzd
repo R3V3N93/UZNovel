@@ -1,1 +1,2 @@
 alias printbooks "netevent ShowBooks"
+alias printStage "netevent SerializeStage"

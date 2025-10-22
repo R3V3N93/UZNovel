@@ -5,7 +5,7 @@ struct Stage
     TextureID bg;
     string speakers; // Volatile
     double timerCoeff; // Volatile
-    BrokenLines text; // Volatile
+    transient BrokenLines text; // Volatile
     int curLine; // Volatile
     double textTimer; // Volatile
     Vector2 textPos; // Volatile
@@ -28,8 +28,9 @@ Class UZNovelHandler : EventHandler
 
     CVar autoReadCvar;
 
-    override void OnRegister()
+    override void NewGame()
     {
+        Debug.LogDebug("GZNOVEL : Initializing");
         autoReadCvar = CVar.GetCVar("cl_uznovel_autoread", players[ConsolePlayer]);
         LoadConfig();
         LoadCharacters("/books/errorbook.json");
@@ -45,7 +46,7 @@ Class UZNovelHandler : EventHandler
 
     static UZNovelHandler Get()
     {
-        return UZNovelHandler(StaticEventHandler.Find('UZNovelHandler'));
+        return UZNovelHandler(EventHandler.Find('UZNovelHandler'));
     }
     
     Book FindBook(string what)
@@ -197,7 +198,7 @@ Class UZNovelHandler : EventHandler
         e.name.split(args, "|");
         if(args[0] == "GoNextPage")
             GoNextPage();
-            
+
         if(args[0] == "ShowBooks")
         {
             console.printf("UZNovel : Currently loaded books\n    ");
@@ -208,6 +209,22 @@ Class UZNovelHandler : EventHandler
             if(curBook)
                 console.printf("Currently Playing Book : "..curBook.name);
         }
+
+        if(args[0] == "SerializeStage")
+        {
+            console.printf("UZNovel : Printing current stage info..");
+                console.printf("\n    IsInBook() : "..IsInBook());
+                console.printf("\n    curPage : "..curPage);
+                console.printf("\n    characters.size : "..stage.characters.size());
+                console.printf("\n    cg.size : "..stage.cg.size());
+                console.printf("\n    bg : "..Texman.GetName(stage.bg));
+                console.printf("\n    speakers : "..stage.speakers);
+                console.printf("\n    timerCoeff : "..stage.timerCoeff);
+                console.printf("\n    curLine : "..stage.curLine);
+                console.printf("\n    textTimer : "..stage.textTimer);
+                console.printf("\n    textPos : "..stage.textPos);
+                console.printf("\n    autoReadtimer : "..stage.autoReadtimer);
+        }
     }
 
     override void RenderOverlay (RenderEvent e)
@@ -216,7 +233,7 @@ Class UZNovelHandler : EventHandler
         {
             if(!config.isSetup)
             {
-                Debug.LogWarning("GZNovel is not setup properly! Please check your \cfGZNINFO.json\c- again!");
+                Debug.LogWarning("UZNovel is not setup properly! Please check your \cfUZNINFO.json\c- again!");
                 return;
             }
 
