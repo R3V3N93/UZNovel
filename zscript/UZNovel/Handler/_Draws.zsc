@@ -47,13 +47,13 @@ extend class UZNovelHandler
     {
         string localized = StringTable.Localize(text);
 
-        Vector2 textSize = (config.font.StringWidth(text), config.Font.GetHeight());
+        Vector2 textSize = (config.font.StringWidth(text), config.Font.GetHeight() * line);
         Vector2 realPos;
-        //console.printf(""..textSize);
+
         textSize = (textSize.x * size.x, textSize.y * size.y); // I'm still not sure why I don't have to multiply virtual ratio. Probably I'm missing a logic here
         
 
-        realPos = (pos.x * config.virtualResolution.x, pos.y * config.virtualResolution.y) + (0, textSize.y * line);
+        realPos = (pos.x * config.virtualResolution.x, pos.y * config.virtualResolution.y)/* + (0, textSize.y * line)*/;
 
         if(pivot & PIVOT_CENTER)
             realPos.x -= textSize.x / 2.0;

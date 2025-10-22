@@ -4,12 +4,13 @@ struct Stage
     Array<CG> cg;
     TextureID bg;
     string speakers; // Volatile
-    double timerCoeff; // Volatile
-    transient BrokenLines text; // Volatile
-    int curLine; // Volatile
+    int autoReadtimer;
+
+    double textTimerCoefficient; // Volatile
+    string text; // Volatile
+    int textLines; // Volatile
     double textTimer; // Volatile
     Vector2 textPos; // Volatile
-    int autoReadtimer;
 
     string prevMusic;
 }
@@ -33,8 +34,8 @@ Class UZNovelHandler : EventHandler
         autoReadCvar = CVar.GetCVar("cl_uznovel_autoread", players[ConsolePlayer]);
         LoadConfig();
 
-        if(IsInBook())
-            GoNextPage(curPage);
+        //if(IsInBook())
+         //   GoNextPage(curPage);
     }
 
     override void NewGame()
@@ -88,9 +89,9 @@ Class UZNovelHandler : EventHandler
         curPage = -1;
         stage.characters.Clear();
         stage.speakers = "";
-        stage.timerCoeff = 0.0;
-        stage.text = null;
-        stage.curLine = 0;
+        stage.textTimerCoefficient = 0.0;
+        stage.text = "";
+        stage.textLines = 0;
         stage.textTimer = 0;
         stage.cg.Clear();
         S_ResumeSound(false);
@@ -107,6 +108,13 @@ Class UZNovelHandler : EventHandler
         return false;
     }
 
+    clearscope bool TextReachedEnd()
+    {
+        if(!IsInBook())
+            return false;
+        return (int(stage.textTimer) >= stage.text.Length());
+    }
+
     Character FindCharacter(string codeName)
     {
         for(int i = 0; i < characters.Size(); i++) // I REALLY need to study some algorhithm bullshits to minimize such simple for loop parsing.
@@ -121,7 +129,7 @@ Class UZNovelHandler : EventHandler
     {
         if(IsInBook())
         {
-            if(stage.curLine == stage.text.Count())
+            if(TextReachedEnd())
             {
                 if(autoReadCvar)
                 {
@@ -139,13 +147,8 @@ Class UZNovelHandler : EventHandler
                 return;
             }
                 
-
-            stage.textTimer += stage.timerCoeff;
-            if(int(stage.textTimer) > stage.text.StringAt(stage.curLine).Length())
-            {
-                stage.textTimer = 0.0;
-                stage.curLine++;
-            }
+            if(!TextReachedEnd())
+                stage.textTimer += stage.textTimerCoefficient;
 
             for(int i = 0; i < stage.cg.Size(); i++)
             {
@@ -188,8 +191,8 @@ Class UZNovelHandler : EventHandler
                             stage.cg[i].alpha = 0.0;
                     }
 
-                    if(stage.curLine < stage.text.Count())
-                        stage.curLine = stage.text.Count();
+                    if(!TextReachedEnd())
+                        stage.textTimer = stage.text.Length();
                     else
                         EventHandler.SendNetworkEvent("GoNextPage");
                 }
@@ -225,9 +228,9 @@ Class UZNovelHandler : EventHandler
                 console.printf("\n    cg.size : "..stage.cg.size());
                 console.printf("\n    bg : "..Texman.GetName(stage.bg));
                 console.printf("\n    speakers : "..stage.speakers);
-                console.printf("\n    timerCoeff : "..stage.timerCoeff);
-                console.printf("\n    curLine : "..stage.curLine);
-                console.printf("\n    textTimer : "..stage.textTimer);
+                console.printf("\n    textTimerCoefficient : "..stage.textTimerCoefficient);
+                console.printf("\n    textLines : "..stage.textLines);
+                console.printf("\n    textTimer : "..stage.textTimer.."(Text length : "..stage.text.Length()..")");
                 console.printf("\n    textPos : "..stage.textPos);
                 console.printf("\n    autoReadtimer : "..stage.autoReadtimer);
         }
@@ -261,26 +264,15 @@ Class UZNovelHandler : EventHandler
                 GZN_DrawImage(curCharacter.curGraphic, (curCharacter.pos, 1.0), highlight : curCharacter.IsHighlight, size:curCharacter.size);
             }
 
-            if(stage.text.Count() > 0) {
-
-            // Dialogue box
-            GZN_DrawImage(config.dialogueBG, (0.5, 1.0));
-
-            // Speaker
-            GZN_DrawText(stage.speakers, config.speakerPos, pivot:config.speakerPivot, size:(config.speakerTextSize, config.speakerTextSize));
-
-            // Dialogue text
-            for(int i = 0; i < stage.text.Count(); i++)
+            if(stage.text != "") 
             {
-                //console.printf(stage.text.StringAt(i).." "..stage.text.Count().." "..stage.curLine);
-                if(i > stage.curLine)
-                    continue;
+                // Dialogue box
+                GZN_DrawImage(config.dialogueBG, (0.5, 1.0));
 
-                if(i < stage.curLine)
-                    GZN_DrawText(stage.text.StringAt(i), stage.textPos, line : i, pivot:curRealPage.textPivot, size:(config.dialogueTextSize, config.dialogueTextSize));
-                else
-                    GZN_DrawText(stage.text.StringAt(i).Left(int(stage.textTimer)), stage.textPos, line : i, pivot:curRealPage.textPivot, size:(config.dialogueTextSize, config.dialogueTextSize));
-            }
+                // Speaker
+                GZN_DrawText(stage.speakers, config.speakerPos, pivot:config.speakerPivot, size:(config.speakerTextSize, config.speakerTextSize));
+
+                GZN_DrawText(stage.text.Left(int(stage.textTimer)), stage.textPos, pivot:curRealPage.textPivot, line:stage.textLines, size:(config.dialogueTextSize, config.dialogueTextSize));
             }
         }
     }

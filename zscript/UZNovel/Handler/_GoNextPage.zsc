@@ -29,8 +29,8 @@ extend class UZNovelHandler
         }
 
         stage.speakers = "";
-        stage.text = null;
-        stage.curLine = 0;
+        stage.text = "";
+        stage.textLines = 0;
         stage.textTimer = 0.0;
         stage.textPos = (0.0, 0.0);
 
@@ -47,8 +47,15 @@ extend class UZNovelHandler
         if(curRealPage.music != "")
             S_ChangeMusic(curRealPage.music);
 
-        stage.text = config.font.BreakLines(curRealPage.text, config.maxLen);
-        stage.timerCoeff = curRealPage.text.Length() * 1.0 / (curRealPage.time * 1.0);
+        BrokenLines text = config.font.BreakLines(curRealPage.text, config.maxLen);
+        for(int i = 0; i < text.Count(); i++)
+        {
+            stage.text.AppendFormat(text.StringAt(i));
+            if(i+1 != text.Count())
+                stage.text.AppendFormat("\n");
+        }
+        stage.textLines = text.Count();
+        stage.textTimerCoefficient = stage.text.Length() * 1.0 / (curRealPage.time * 1.0);
         if(curRealPage.bg.IsValid())
             stage.bg = curRealPage.bg;
 
@@ -153,7 +160,7 @@ extend class UZNovelHandler
             // Speaker
             if(curDirective.speaker) tempSpeakers.Push(curCharacter.curName);
 
-            Debug.LogDebug("GoNextPage() : Current Stage Setup\n    Characters size = "..stage.characters.Size().."\n    Speakers = "..stage.speakers.."\n    timerCoeff = "..stage.timerCoeff.."\n    text = \""..stage.text.."\"");
+            Debug.LogDebug("GoNextPage() : Current Stage Setup\n    Characters size = "..stage.characters.Size().."\n    Speakers = "..stage.speakers.."\n    textTimerCoefficient = "..stage.textTimerCoefficient.."\n    text = \""..stage.text.."\"");
         }
 
         // Highlight
