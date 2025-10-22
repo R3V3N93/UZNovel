@@ -1,6 +1,5 @@
 extend class UZNovelHandler
 {
-
     CG FindCGfromStage(int id)
     {
         for(int i = 0; i < stage.cg.Size(); i++)
@@ -43,7 +42,8 @@ extend class UZNovelHandler
 
         // Using S_StartSound() DOES overlap previous sounds, so I can't use it
         // What's the point, ffs
-        players[0].mo.A_StartSound(curRealPage.sound, CHAN_7);
+        if(players[0].mo)
+            players[0].mo.A_StartSound(curRealPage.sound, CHAN_7);
         if(curRealPage.music != "")
             S_ChangeMusic(curRealPage.music);
 
