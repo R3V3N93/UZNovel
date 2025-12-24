@@ -2,6 +2,7 @@ extend class UZNovelHandler
 {
     void LoadBooks(string fileName) 
     {
+        // Find file
         int lump = Wads.CheckNumForFullName(fileName);
         if(lump == -1)
         {
@@ -11,102 +12,103 @@ extend class UZNovelHandler
 
         JsonElementOrError data = JSON.parse(Wads.ReadLump(lump),false);
 		if(data is "JsonError")
-        {
 			Debug.Throw("LoadBooks(): "..JsonError(data).what);
-		}
 
         // Deserialize
         JsonObject obj = JsonObject(JsonElement(data));
 
-        JsonElement bookArrElm = obj.get("Books");
-        if(!bookArrElm)
+        JsonElement bookArrElement = obj.get("Books");
+        if(!bookArrElement)
         {
-            JsonElement ThisMFmisspelledCharactersFfs = obj.get("Book"); 
-            Debug.Throw("LoadBooks(): Could not find array \cfBooks\c-."..(ThisMFmisspelledCharactersFfs ? "\nIntead, \cfBook\c- is found. Did you forget to \cfwrite extra s?\c-" : ""));
+            JsonElement misspelledBooks = obj.get("Book"); 
+            Debug.Throw("LoadBooks(): Could not find array \cfBooks\c-."..(misspelledBooks ? "\nIntead, \cfBook\c- is found. Did you forget to \cfwrite extra s?\c-" : ""));
         }
-        JsonArray bookArr = JsonArray(bookArrElm);
+        JsonArray bookArr = JsonArray(bookArrElement);
 
-        if(!bookArr)
-            Debug.Throw("LoadBooks(): Element \cfBooks\c- is found but it is not \cfArray\c-, but "..bookArrElm.GetClassName());
+        if(!bookArr) Debug.Throw("LoadBooks(): Element \cfBooks\c- is found but it is not \cfArray\c-, but "..bookArrElement.GetClassName());
         
         for(uint i = 0; i < bookArr.size(); i++)
         {
             Book book = Book.Create();
-            JsonElement item = bookArr.get(i);
-            JsonObject bookObj = JsonObject(item);
-
+            JsonObject bookObj = JsonObject(bookArr.get(i));
+            
+            // Necessary properties
             JsonString nameJson = JsonString(bookObj.get("Name"));
-            JsonArray pagesArr = JsonArray(bookObj.get("Pages"));
+            JsonArray  pagesArr = JsonArray (bookObj.get("Pages"));
 
             if(!nameJson) Debug.Throw("LoadBooks(): At Book "..(i+1).." : Property \cfName\c- is not present, or type is not \cfstring\c-");
             if(!pagesArr) Debug.Throw("LoadBooks(): At Book "..(i+1).." : Property \cfPages\c- is not present, or type is not \cfarray\c-");
-
+            
+            // Check if book with same name had already been loaded.
             if(FindBook(nameJson.s))
             {
-                Debug.LogWarning("LoadBooks() : From \cf"..fileName.."\c-, book \cf"..nameJson.s.."\c- is already loaded.");
+                Debug.LogWarning("LoadBooks() : From \cf"..fileName.."\c-, book \cf"..nameJson.s.."\c- is already loaded. Make sure you are not loading the \cfsame book again\c- or check if you have \cfbooks with same name between files!\c-");
                 continue;
             }
-
+            
+            book.name = nameJson.s;
+            
+            // Pages
             Array<Page> pages;
-
             for(uint j = 0; j < pagesArr.Size(); j++)
             {
                 Page page = Page.Create();
 
-                JsonObject pageObj = JsonObject(pagesArr.Get(j));
-
-                JsonString bgJson = JsonString(pageObj.get("BG"));
-                JsonArray cgJson = JsonArray(pageObj.get("CG"));
-                JsonString sfxJson = JsonString(pageObj.get("Sound"));
-                JsonString musicJson = JsonString(pageObj.get("Music"));
-                JsonString textJson = JsonString(pageObj.get("Text"));
-                JsonArray textPivotJson = JsonArray(pageObj.get("TextPivot"));
-                JsonInt timeJson = JsonInt(pageObj.get("Time"));
-                JsonArray charJson = JsonArray(pageObj.get("Characters"));
-                JsonArray char_removeJson = JsonArray(pageObj.get("Remove"));
-                JsonArray char_highlightJson = JsonArray(pageObj.get("Highlight"));
-
+                JsonObject pageObj            = JsonObject(pagesArr.Get(j));
+                // Properties
+                JsonString bgJson             = JsonString(pageObj.get("BG"));
+                JsonArray  cgJson             = JsonArray (pageObj.get("CG"));
+                JsonString sfxJson            = JsonString(pageObj.get("Sound"));
+                JsonString musicJson          = JsonString(pageObj.get("Music"));
+                JsonString textJson           = JsonString(pageObj.get("Text"));
+                JsonArray  textPivotJson      = JsonArray (pageObj.get("TextPivot"));
+                JsonInt    timeJson           = JsonInt   (pageObj.get("Time"));
+                JsonArray  charJson           = JsonArray (pageObj.get("Characters"));
+                JsonArray  removeJson         = JsonArray (pageObj.get("Remove"));
+                JsonArray  highlightJson      = JsonArray (pageObj.get("Highlight"));
+                
+                // BG
                 if(bgJson)
                 {
                     TextureID tex = Texman.CheckForTexture(bgJson.s);
-                    if(tex.IsValid() == false)
+                    if(tex.IsValid() == false) // TODO : Put error texture upon false
                         Debug.LogWarning("LoadBooks(): At Page "..(j+1).."  of Book "..(i+1)..": Property \cfBG\c-'s graphic is not valid. Make sure you input correct directory or the graphic's file is there");
                     page.bg = tex;
                 }
                 
+                // CG
                 if(cgJson)
                 {  
                     for(int k = 0; k < cgJson.Size(); k++)
                     {
-                        JsonObject cgObjJson = JsonObject(cgJson.Get(k));
-                        
                         CG cg = CG.Create();
+                        JsonObject  cgObjJson     = JsonObject(cgJson.Get(k)); 
 
-                        JsonInt cgIDJson = JsonInt(cgObjJson.get("id"));
-                        JsonString graphic = JsonString(cgObjJson.get("Graphic"));
-                        TextureID tex = Texman.CheckForTexture((graphic == null ? "" : graphic.s));
+                        JsonInt     cgIDJson      = JsonInt   (cgObjJson.get("id"));
+                        JsonString  graphicJson   = JsonString(cgObjJson.get("Graphic"));
+                        JsonArray   posJson       = JsonArray (cgObjJson.get("Pos"));
+                        JsonArray   sizeJson      = JsonArray (cgObjJson.get("Size"));
+                        JsonArray   cgPivotJson   = JsonArray (cgObjJson.get("Pivot"));
+                        JsonInt     cgFadeOutJson = JsonInt   (cgObjJson.get("FadeOut"));
+                        JsonInt     cgFadeInJson  = JsonInt   (cgObjJson.get("FadeIn"));
+
+                        TextureID tex = Texman.CheckForTexture((graphicJson == null ? "" : graphicJson.s));
                         if(tex.IsValid() == false)
                             Debug.LogWarning("LoadBooks(): At Page "..(j+1)..": Property \cfCG\c-'s graphic is not valid. Make sure you input correct directory or the graphic's file is there");
-                        JsonArray pos = JsonArray(cgObjJson.get("Pos"));
-                        JsonArray size = JsonArray(cgObjJson.get("Size"));
-                        JsonArray cgPivotJson = JsonArray(cgObjJson.get("Pivot"));
-                        JsonInt cgFadeOutJson = JsonInt(cgObjJson.get("FadeOut"));
-                        JsonInt cgFadeInJson = JsonInt(cgObjJson.get("FadeIn"));
-                        JsonElement cgRemoveJson = cgObjJson.get("Remove");
 
                         if(!cgIDJson)  Debug.Throw("LoadBooks(): At Book "..(i+1).." At Page "..(j+1).."At CG "..(k+1).." : Property \cfid\c- is not present, or type is not \cfint\c-");
                         cg.id = cgIDJson.asInt();
 
                         double posX, posY, sizeX, sizeY;
-                        if(pos && JsonDouble(pos.Get(0))) posX = JsonDouble(pos.Get(0)).asDouble();
-                        else                              posX = 0.5;
-                        if(pos && JsonDouble(pos.Get(1))) posY = JsonDouble(pos.Get(1)).asDouble();
-                        else                              posY = 0.5;
+                        if(posJson && JsonDouble(pos.Get(0))) posX = JsonDouble(pos.Get(0)).asDouble();
+                        else                                  posX = 0.5;
+                        if(posJson && JsonDouble(pos.Get(1))) posY = JsonDouble(pos.Get(1)).asDouble();
+                        else                                  posY = 0.5;
 
-                        if(size && JsonDouble(size.Get(0))) sizeX = JsonDouble(size.Get(0)).asDouble();
-                        else                                sizeX = 1.0;
-                        if(size && JsonDouble(size.Get(1))) sizeY = JsonDouble(size.Get(1)).asDouble();
-                        else                                sizeY = 1.0;
+                        if(sizeJson && JsonDouble(size.Get(0))) sizeX = JsonDouble(size.Get(0)).asDouble();
+                        else                                    sizeX = 1.0;
+                        if(sizeJson && JsonDouble(size.Get(1))) sizeY = JsonDouble(size.Get(1)).asDouble();
+                        else                                    sizeY = 1.0;
 
                         if(!cgPivotJson) cg.pivot = PIVOT_CENTER|PIVOT_MIDDLE;
                         else                   
@@ -124,10 +126,10 @@ extend class UZNovelHandler
                         }
 
                         if(cgFadeOutJson) cg.fadeOut = -1.0 / cgFadeOutJson.asDouble();
-                        else              cg.fadeOut = 0;
+                        else              cg.fadeOut = 0; // Zero means it will disappear right away.
 
-                        if(cgFadeInJson) cg.fadeIn = 1.0 / cgFadeInJson.asDouble();
-                        else             cg.fadeIn = 1.0;
+                        if(cgFadeInJson)  cg.fadeIn = 1.0 / cgFadeInJson.asDouble();
+                        else              cg.fadeIn = 1.0;
 
                         cg.graphic = tex;
                         cg.pos = (posX, posY);
@@ -137,48 +139,43 @@ extend class UZNovelHandler
                     }
                 }
 
-                if(sfxJson) page.sound = sfxJson.s;
-                if(musicJson) page.music = musicJson.s;
-                if(textJson) page.text = textJson.s;
+                if(sfxJson)        page.sound = sfxJson.s;
+                if(musicJson)      page.music = musicJson.s;
+                if(textJson)       page.text = textJson.s;
+                if(timeJson)       page.time = timeJson.asInt();
+
                 if(!textPivotJson) page.textPivot = PIVOT_LEFT|PIVOT_TOP;
                 else                   
                 {
                     for(int i = 0; i < textPivotJson.Size(); i++)
                     {
                         string item = JsonString(textPivotJson.Get(i)).s;
-                        if(item == "Left")
-                            page.textPivot |= PIVOT_LEFT;
-                        if(item == "Center")
-                            page.textPivot |= PIVOT_CENTER;
-                        if(item == "Right")
-                            page.textPivot |= PIVOT_RIGHT;
-                        if(item == "Top")
-                            page.textPivot |= PIVOT_TOP;
-                        if(item == "Middle")
-                            page.textPivot |= PIVOT_MIDDLE;
-                        if(item == "Bottom")
-                            page.textPivot |= PIVOT_BOTTOM;
+                        if(item == "Left")   page.textPivot |= PIVOT_LEFT;
+                        if(item == "Center") page.textPivot |= PIVOT_CENTER;
+                        if(item == "Right")  page.textPivot |= PIVOT_RIGHT;
+                        if(item == "Top")    page.textPivot |= PIVOT_TOP;
+                        if(item == "Middle") page.textPivot |= PIVOT_MIDDLE;
+                        if(item == "Bottom") page.textPivot |= PIVOT_BOTTOM;
                     }
                 }
-                if(timeJson)
-                    page.time = timeJson.asInt();
+                
 
-                if(char_removeJson)
+                if(removeJson)
                 {
                     Array<string> tempRemove;
-                    for(uint l = 0; l < char_removeJson.Size(); l++)
+                    for(uint l = 0; l < removeJson.Size(); l++)
                     {
-                        tempRemove.Push(JsonString(char_removeJson.get(l)).s);
+                        tempRemove.Push(JsonString(removeJson.get(l)).s);
                     }
                     page.remove.Move(tempRemove);
                 }
 
-                if(char_highlightJson)
+                if(highlightJson)
                 {
                     Array<string> tempHighlight;
-                    for(uint l = 0; l < char_highlightJson.Size(); l++)
+                    for(uint l = 0; l < highlightJson.Size(); l++)
                     {
-                        tempHighlight.Push(JsonString(char_highlightJson.get(l)).s);
+                        tempHighlight.Push(JsonString(highlightJson.get(l)).s);
                     }
                     page.highlight.Move(tempHighlight);
                 }
@@ -187,22 +184,27 @@ extend class UZNovelHandler
                 {
                     for(uint k = 0; k < charJson.size(); k++)
                     {
+                        Directive directive = Directive.Create();
+
                         JsonObject charObj = JsonObject(charJson.Get(k));
                         if(!charObj)
                             Debug.Throw("LoadBooks(): At Character "..(k+1).." of Page "..(j+1).." : Characters array should not have other than Objects.");
                         
-                        Directive directive = Directive.Create();
-
+                        // Properties
                         JsonString char_codeNameJson = JsonString(charObj.get("Codename"));
-                        JsonString char_nameJson = JsonString(charObj.get("Name"));
-                        JsonString char_graphicJson = JsonString(charObj.get("Graphic"));
-                        JsonInt char_stateJson = JsonInt(charObj.get("State"));
-                        JsonDouble char_posJson = JsonDouble(charObj.get("Pos"));
-                        JsonArray char_sizeJson = JsonArray(charObj.get("Size"));
-                        JsonBool char_speakerJson = JsonBool(charObj.get("IsSpeaker"));
+                        JsonString char_nameJson     = JsonString(charObj.get("Name"));
+                        JsonString char_graphicJson  = JsonString(charObj.get("Graphic"));
+                        JsonInt    char_stateJson    = JsonInt   (charObj.get("State"));
+                        JsonDouble char_posJson      = JsonDouble(charObj.get("Pos"));
+                        JsonArray  char_sizeJson     = JsonArray (charObj.get("Size"));
+                        JsonBool   char_speakerJson  = JsonBool  (charObj.get("IsSpeaker"));
 
                         if(char_codeNameJson) directive.codeName = char_codeNameJson.s;
-                        if(char_nameJson) directive.name = char_nameJson.s;
+                        if(char_nameJson)     directive.name     = char_nameJson.s;
+                        if(char_stateJson)    directive.state    = char_stateJson.asInt();
+                        if(char_posJson)      directive.pos      = char_posJson.asDouble();
+                        if(char_speakerJson)  directive.speaker  = char_speakerJson.b;
+
                         if(char_graphicJson)
                         {
                             TextureID tex = Texman.CheckForTexture(char_graphicJson.s);
@@ -210,9 +212,6 @@ extend class UZNovelHandler
                                 Debug.LogWarning("LoadBooks(): At Character"..(k+1).." of Page "..(j+1)..": Property \cfGraphic\c-'s graphic is not valid. Make sure you input correct directory or the graphic's file is there");
                             directive.graphic = tex;
                         }
-                        if(char_stateJson) directive.state = char_stateJson.asInt();
-                        if(char_posJson) directive.pos = char_posJson.asDouble();
-                        if(char_speakerJson) directive.speaker = char_speakerJson.b;
 
                         if(char_sizeJson)
                         {
@@ -227,7 +226,7 @@ extend class UZNovelHandler
                 Debug.LogDebug("LoadBook(): From \cf"..fileName.."\c-\n   Loaded Page "..(j+1)..":\n     "..page.Serialize());
                 pages.push(page);
             }
-            book.name = nameJson.s;
+
             book.pages.Move(pages);
 
             Debug.LogDebug("LoadBook(): From \cf"..fileName.."\c-\n   Loaded book:\n     "..book.name);
