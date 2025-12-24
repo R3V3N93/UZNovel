@@ -67,7 +67,7 @@
                 "Music":"Music to play",
                 "Text":"Text to display",
                 "TextPivot": ["Left", "Top"],
-                "Time":1, // The timespan in which the text will be 'typed'
+                "Time":1, // The timespan in tick in which the text will be 'typed'
                 // Characters block
                 // Characters could be added/revised in this block
                 // Common rules to know:
