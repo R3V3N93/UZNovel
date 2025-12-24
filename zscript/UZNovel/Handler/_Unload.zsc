@@ -55,9 +55,9 @@ extend class UZNovelHandler
         Array<string> booksToShred;
         for(uint i = 0; i < bookArr.size(); i++)
         {
-            JsonElement item = bookArr.get(i);
-            JsonObject bookObj = JsonObject(item);
-            JsonString nameJson = JsonString(bookObj.get("Name"));
+            JsonElement item     = bookArr.get(i);
+            JsonObject  bookObj  = JsonObject(item);
+            JsonString  nameJson = JsonString(bookObj.get("Name"));
             if(!nameJson) Debug.Throw("UnloadBookFile(): At Book "..(i+1).." : Property \cfName\c- is not present, or type is not \cfstring\c-");
             
             booksToShred.Push(nameJson.s);
@@ -104,9 +104,9 @@ extend class UZNovelHandler
         for(uint i = 0; i < charArr.size(); i++)
         {
             JsonElement item = charArr.get(i);
-            JsonObject charObj = JsonObject(item);
+            JsonObject  charObj = JsonObject(item);
 
-            JsonString codeNameJson = JsonString(charObj.get("Codename"));
+            JsonString  codeNameJson = JsonString(charObj.get("Codename"));
 
             if(!codeNameJson)
                 Debug.Throw("LoadCharacters(): At Character "..(i+1).." : Property \cfCodename\c- is not present, or type is not \cfstring\c-");
