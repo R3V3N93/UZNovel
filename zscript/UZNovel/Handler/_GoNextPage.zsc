@@ -11,54 +11,65 @@ extend class UZNovelHandler
         return null;
     }
 
+    // -1 means proceeding to next page.
+    // Any integers that are equal to or more than 0 will send current book to specified page.
     void GoNextPage(int page = -1) 
     {
-        if(page != -1) // this is placed here in order to initialize books in StartBook()
+        // this is placed here in order to initialize books from page 0 (GoNextPage(0)) in StartBook()
+        if(page != -1) 
             curPage = page; 
 
         if(!IsInBook())
             return;
+        
 
         if(page == -1)
             curPage++;
 
-        if(curPage == curBook.GetPageCount())
+        if(curPage >= curBook.GetPageCount())
         {
             EndBook();
             return;
         }
-
+        
+        // Initialize stage elements.
         stage.speakers = "";
         stage.text = "";
         stage.textLines = 0;
         stage.textTimer = 0.0;
         stage.textPos = (0.0, 0.0);
 
-        
-
+        // Temporary collection of names of characters marked with 'IsSpeaker'
+        // It will be later accumulated into single string, and vanish.
         Array<string> tempSpeakers;
 
         Page curRealPage = curBook.pages[curPage];
 
+        // Sound stuffs
+
         // Using S_StartSound() DOES overlap previous sounds, so I can't use it
         // What's the point, ffs
-        if(players[0].mo)
-            players[0].mo.A_StartSound(curRealPage.sound, CHAN_7);
-        if(curRealPage.music != "")
-            S_ChangeMusic(curRealPage.music);
+        if(players[0].mo)           players[0].mo.A_StartSound(curRealPage.sound, CHAN_7); // TODO : Use S_StartSound once it is not restarded
+        if(curRealPage.music != "") S_ChangeMusic(curRealPage.music);
 
+        // Text stuffs
+
+        // Break texts into several lines
         BrokenLines text = config.font.BreakLines(curRealPage.text, config.maxLen);
         for(int i = 0; i < text.Count(); i++)
         {
+            // Each line will be appended to stage.text, with \n on its tail
             stage.text.AppendFormat(text.StringAt(i));
             if(i+1 != text.Count())
                 stage.text.AppendFormat("\n");
         }
         stage.textLines = text.Count();
         stage.textTimerCoefficient = stage.text.Length() * 1.0 / (curRealPage.time * 1.0);
-        if(curRealPage.bg.IsValid())
-            stage.bg = curRealPage.bg;
 
+        // BG
+        if(curRealPage.bg.IsValid()) stage.bg = curRealPage.bg;
+        
+        // Text pivot
         if(curRealPage.textPivot & PIVOT_LEFT)   stage.textPos.x = config.textBox_TopLeft.x;
         if(curRealPage.textPivot & PIVOT_CENTER) stage.textPos.x = (config.textBox_TopLeft.x + config.textBox_BottomRight.x) / 2.0;
         if(curRealPage.textPivot & PIVOT_RIGHT)  stage.textPos.x = config.textBox_BottomRight.x;
@@ -70,9 +81,7 @@ extend class UZNovelHandler
         if(curRealPage.remove.Size() > 0)
         {
             if(curRealPage.remove.Find("__ALL__") != curRealPage.remove.Size())
-            {
-                stage.characters.Clear();
-            }
+                stage.characters.Clear(); // This will also prevent subsequent For loop from happening.
 
             for(int j = 0; j < stage.characters.Size(); j++)
             {
@@ -84,7 +93,10 @@ extend class UZNovelHandler
         // CG
         for(int i = 0; i < curRealPage.cg.Size(); i++)
         {
+            // Check if wanted CG is already in stage
+            // if so, get the pointer to that.
             CG curCG = FindCGFromStage(curRealPage.cg[i].id);
+            // if not, make a new CG in the stage!
             if(!curCG)
             {
                 curCG = CG.Create();
@@ -93,15 +105,18 @@ extend class UZNovelHandler
             }
 
             curCG.graphic = curRealPage.cg[i].graphic;
-            curCG.pos = curRealPage.cg[i].pos;
-            curCG.size = curRealPage.cg[i].size;
-            curCG.pivot = curRealPage.cg[i].pivot;
-            curCG.fadeIn = curRealPage.cg[i].fadeIn;
+            curCG.pos     = curRealPage.cg[i].pos;
+            curCG.size    = curRealPage.cg[i].size;
+            curCG.pivot   = curRealPage.cg[i].pivot;
+            curCG.fadeIn  = curRealPage.cg[i].fadeIn;
             curCG.fadeOut = curRealPage.cg[i].fadeOut;
 
             Debug.LogDebug("GoNextPage() : CurCG -> "..curCG.Serialize());
         }
-
+        
+        // Characters block
+        // 'Directive's are the name of each Characters block's item.
+        // which has similar structure to Character class, but just tells what this character should do.
         for(int i = 0; i < curRealPage.directives.Size(); i++)
         {
             Directive curDirective = curRealPage.directives[i];
@@ -184,9 +199,9 @@ extend class UZNovelHandler
 
         if(tempSpeakers.Size() > 0)
         {
-            if(tempSpeakers.Size() == 1)
-                stage.speakers = tempSpeakers[0];
-            else
+            if(tempSpeakers.Size() == 1) // Only one speaker
+                stage.speakers = tempSpeakers[0]; 
+            else                         // Multiple speakers
             {
                 for(int i = 0; i < tempSpeakers.Size(); i++)
                 {
