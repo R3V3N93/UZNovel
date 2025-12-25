@@ -47,7 +47,7 @@ extend class UZNovelHandler
             }
             
             book.name = nameJson.s;
-            
+
             // Pages
             Array<Page> pages;
             for(uint j = 0; j < pagesArr.Size(); j++)
@@ -125,7 +125,7 @@ extend class UZNovelHandler
                             }
                         }
 
-                        if(cgFadeOutJson) cg.fadeOut = -1.0 / cgFadeOutJson.asDouble();
+                        if(cgFadeOutJson) cg.fadeOut = -1.0 / cgFadeOutJson.asDouble(); // is negative in order to decrement by adding (alpha += fadeout)
                         else              cg.fadeOut = 0; // Zero means it will disappear right away.
 
                         if(cgFadeInJson)  cg.fadeIn = 1.0 / cgFadeInJson.asDouble();
