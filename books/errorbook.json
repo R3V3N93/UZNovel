@@ -4,10 +4,10 @@
 [
     {
         "Codename" : "__ERROR__",
-        "Name" : "Faust",
+        "Name" : "Error",
         "Graphics" :
         [
-            "Graphics/Characters/Faust_Goofy.png"
+            "Graphics/Example/Characters/True-representation-of-how-retarded-a-human-could-be.png"
         ] 
     }
 ],
@@ -28,7 +28,6 @@
                 [
                     {
                         "Codename":"__ERROR__",
-                        "Name":"Error",
                         "IsSpeaker":true,
                         "Pos":0.5,
                         "State":-1
