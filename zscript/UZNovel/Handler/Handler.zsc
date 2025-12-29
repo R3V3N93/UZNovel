@@ -1,43 +1,46 @@
 struct Stage
 {
     Array<Character> characters;
-    Array<CG> cg;
-    TextureID bg;
-    string speakers; // Volatile
-    int autoReadtimer;
+    Array<CG>        cg;
+    TextureID        bg;
+    int              autoReadtimer;
 
-    double textTimerCoefficient; // Volatile
-    string text; // Volatile
-    int textLines; // Volatile
-    double textTimer; // Volatile
-    Vector2 textPos; // Volatile
+    // Volatile stage properties
+    // volatile means it will be re-initialized on GoNextPage()
 
-    string prevMusic;
+        // Speakers.
+        string  speakers; 
+        // How many characters of texts will be shown per tic?
+        double  textTimerCoefficient; 
+        string  text; 
+        int     textLines; 
+        double  textTimer; 
+        Vector2 textPos; 
+
+        string prevMusic;
 }
 
 Class UZNovelHandler : EventHandler
 {
-    Stage stage;
-    Book curBook;
-    int curPage;
-    private GZNConfig config;
+    public  Stage            stage;
+    public  Book             curBook;
+    public  int              curPage; // if -1, means it is not playing books.
+    private GZNConfig        config;
 
-    Array<Character> characters;
-    Array<Book> books;
+    public  Array<Character> characters;
+    public  Array<Book>      books;
 
-    private Book _ErrorBook;
+    private Book             _ErrorBook;
 
-    CVar autoReadCvar;
+    public  CVar             autoReadCvar;
 
     override void OnRegister()
     {
         autoReadCvar = CVar.GetCVar("cl_uznovel_autoread", players[ConsolePlayer]);
         LoadConfig();
-
-        //if(IsInBook())
-         //   GoNextPage(curPage);
     }
 
+    // Since UZNovel is dynamic EventHandler, it is wise to load these on new game.
     override void NewGame()
     {
         Debug.LogDebug("GZNOVEL : Initializing");
@@ -58,6 +61,7 @@ Class UZNovelHandler : EventHandler
         return UZNovelHandler(EventHandler.Find('UZNovelHandler'));
     }
     
+    // Finds book with given name
     Book FindBook(string what)
     {
         for(int i = 0; i < books.Size(); i++)
@@ -68,6 +72,7 @@ Class UZNovelHandler : EventHandler
         return null;
     }
 
+    // Starts reading book with given name
     void StartBook(string what) 
     {
         Book bookToRead = FindBook(what);
@@ -77,16 +82,21 @@ Class UZNovelHandler : EventHandler
             bookToRead = FindBook("__ERROR__BOOK__");
         }
         curBook = bookToRead;
-        level.SetFrozen(true);
+        level.SetFrozen(true); // TODO : make this variable with Page block
         S_PauseSound(false, true);
         stage.prevMusic = level.music;
-        GoNextPage(0);
+        // Starts from beginning of the book
+        GoNextPage(0); 
     }
 
+    // Finish reading book regardless which page it is in
     void EndBook() 
     {
+        // Clear book information
         curBook = null;
         curPage = -1;
+
+        // Clear stage properties
         stage.characters.Clear();
         stage.speakers = "";
         stage.textTimerCoefficient = 0.0;
@@ -94,13 +104,17 @@ Class UZNovelHandler : EventHandler
         stage.textLines = 0;
         stage.textTimer = 0;
         stage.cg.Clear();
+
+        // Resume sound, musics and shit
         S_ResumeSound(false);
         S_ChangeMusic(stage.prevMusic);
-        if(players[0].mo)
-            players[0].mo.A_StartSound("", 1, CHANF_LOOP);
+        
+        // Cuts the sound
+        if(players[0].mo) players[0].mo.A_StartSound("", 1, CHANF_LOOP);
         level.SetFrozen(false);
     }
 
+    // Check if a book is being played
     clearscope bool IsInBook()
     {
         if(curBook != null && curPage >= 0)
@@ -115,6 +129,7 @@ Class UZNovelHandler : EventHandler
         return (int(stage.textTimer) >= stage.text.Length());
     }
 
+    // Finds a character by codename
     Character FindCharacter(string codeName)
     {
         for(int i = 0; i < characters.Size(); i++) // I REALLY need to study some algorhithm bullshits to minimize such simple for loop parsing.
@@ -129,6 +144,11 @@ Class UZNovelHandler : EventHandler
     {
         if(IsInBook())
         {
+            //
+            // Autoread
+            //
+
+            // if text is being all displayed
             if(TextReachedEnd())
             {
                 if(autoReadCvar)
@@ -150,9 +170,14 @@ Class UZNovelHandler : EventHandler
             if(!TextReachedEnd())
                 stage.textTimer += stage.textTimerCoefficient;
 
+            //
+            // CG
+            //
+
             for(int i = 0; i < stage.cg.Size(); i++)
             {
                 CG curCG = stage.cg[i];
+                // if curCG has to fadeout
                 if(curCG.fadeOut < 0.0)
                 {
                     if(curCG.alpha <= 0.0)
@@ -163,7 +188,7 @@ Class UZNovelHandler : EventHandler
                     }
                     curCG.alpha += curCG.fadeOut;
                 }
-                else
+                else // fadein (or not fading at all)
                 {
                     curCG.alpha += curCG.fadeIn;
 
@@ -180,10 +205,12 @@ Class UZNovelHandler : EventHandler
         {
             if(e.type == e.Type_KeyDown)
             {
+                // if desired key to skip had been pressed
                 if(bindings.GetBinding(e.KeyScan) == "+attack")
                 {
                     Debug.LogDebug("InputProcess.GoNextPage : Proceeding to next page");
 
+                    // End fading sequence of cg
                     for(int i = 0; i < stage.cg.Size(); i++)
                     {
                         stage.cg[i].alpha = 1.0;
@@ -192,7 +219,7 @@ Class UZNovelHandler : EventHandler
                     }
 
                     if(!TextReachedEnd())
-                        stage.textTimer = stage.text.Length();
+                        stage.textTimer = stage.text.Length(); // Will skip to the end of the text
                     else
                         EventHandler.SendNetworkEvent("GoNextPage");
                 }
