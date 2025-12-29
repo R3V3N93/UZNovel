@@ -230,9 +230,12 @@ Class UZNovelHandler : EventHandler
 
     override void NetworkProcess(ConsoleEvent e)
     {
+        // Cheat codes and shits
+
         Array<String> args;
         e.name.split(args, "|");
-        if(args[0] == "GoNextPage")
+
+        if(args[0] == "GoNextPage") // Seems dangerous if 'mistakenly' called via netevent.
             GoNextPage();
 
         if(args[0] == "ShowBooks")
