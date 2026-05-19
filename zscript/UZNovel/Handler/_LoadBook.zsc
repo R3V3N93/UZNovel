@@ -100,14 +100,14 @@ extend class UZNovelHandler
                         cg.id = cgIDJson.asInt();
 
                         double posX, posY, sizeX, sizeY;
-                        if(posJson && JsonDouble(pos.Get(0))) posX = JsonDouble(pos.Get(0)).asDouble();
+                        if(posJson && JsonDouble(posJson)) posX = JsonDouble(posJson.Get(0)).asDouble();
                         else                                  posX = 0.5;
-                        if(posJson && JsonDouble(pos.Get(1))) posY = JsonDouble(pos.Get(1)).asDouble();
+                        if(posJson && JsonDouble(posJson.Get(1))) posY = JsonDouble(posJson.Get(1)).asDouble();
                         else                                  posY = 0.5;
 
-                        if(sizeJson && JsonDouble(size.Get(0))) sizeX = JsonDouble(size.Get(0)).asDouble();
+                        if(sizeJson && JsonDouble(sizeJson.Get(0))) sizeX = JsonDouble(sizeJson.Get(0)).asDouble();
                         else                                    sizeX = 1.0;
-                        if(sizeJson && JsonDouble(size.Get(1))) sizeY = JsonDouble(size.Get(1)).asDouble();
+                        if(sizeJson && JsonDouble(sizeJson.Get(1))) sizeY = JsonDouble(sizeJson.Get(1)).asDouble();
                         else                                    sizeY = 1.0;
 
                         if(!cgPivotJson) cg.pivot = PIVOT_CENTER|PIVOT_MIDDLE;
