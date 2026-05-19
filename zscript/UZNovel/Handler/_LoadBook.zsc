@@ -219,6 +219,8 @@ extend class UZNovelHandler
                             double sizeY = JsonDouble(char_sizeJson.Get(1)).asDouble();
                             directive.size = (sizeX, sizeY);
                         }
+                        else
+                            directive.size = (1.0, 1.0); // Default value for size
 
                         page.directives.push(directive);
                     }
