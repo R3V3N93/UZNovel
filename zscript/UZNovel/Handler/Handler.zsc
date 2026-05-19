@@ -22,17 +22,17 @@ struct Stage
 
 Class UZNovelHandler : EventHandler
 {
-    public  Stage            stage;
-    public  Book             curBook;
-    public  int              curPage; // if -1, means it is not playing books.
+    Stage            stage;
+    Book             curBook;
+    int              curPage; // if -1, means it is not playing books.
     private GZNConfig        config;
 
-    public  Array<Character> characters;
-    public  Array<Book>      books;
+    Array<Character> characters;
+    Array<Book>      books;
 
     private Book             _ErrorBook;
 
-    public  CVar             autoReadCvar;
+    CVar             autoReadCvar;
 
     override void OnRegister()
     {
