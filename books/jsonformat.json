@@ -77,7 +77,7 @@
                 //     On the other hand, if a character not in current stage is read, it will ``add`` the character to the stage.
                 //     __ALL__ means literally all characters in current stages. // R3V - not currently implemented, and I feel no urgency to do so for now.
                 "Remove": ["Catherine", "All Catherine", "Earlking Heathcliff", "__ALL__"],
-                "Highlight": ["__ALL__"], // Highlights.,
+                "Highlight": ["__ALL__"], // Highlights.
                 "Characters":
                 [
                     {
@@ -90,7 +90,14 @@
                         "IsSpeaker":true // Makes this character the speaker of this conversation.
                         // Note that several characters can have this true, which would result in effect of multiple characters speaking simulataneously.
                     }
-                ]
+                ],
+                // ACS script
+                // If defined, given ACS script is executed upon entering this page
+                // Could be defined either with string or int.
+                // Below stated both versions but keep in mind that
+                // Only one on the top is read and the others are ignored. 
+                "ACS": "MyScript",
+                "ACS": 69,
             }
         ]
     }
