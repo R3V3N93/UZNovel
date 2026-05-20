@@ -113,6 +113,10 @@ extend class UZNovelHandler
 
             Debug.LogDebug("GoNextPage() : CurCG -> "..curCG.Serialize());
         }
+
+        // ACS
+        // if no acs script, it won't do anything
+        curRealPage.pageACS.Execute();
         
         // Characters block
         // 'Directive's are the name of each Characters block's item.

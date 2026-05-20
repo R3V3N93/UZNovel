@@ -31,6 +31,28 @@ class CG
     }
 }
 
+struct PageACS
+{
+    string name;
+    int index;
+
+    int param[3];
+
+    void Execute()
+    {
+        if(name != "")
+        {
+            ACS_NamedExecute(name, 0, param[0], param[1], param[2]);
+            Debug.LogDebug("UZNovel : Executed script "..name);
+        }
+        else if(0 < index && index < 32768)
+        {
+            ACS_Execute(index, 0, param[0], param[1], param[2]);
+            Debug.LogDebug("UZNovel : Executed script "..index)
+        }
+    }
+}
+
 class Directive
 {
     string codeName;
@@ -58,6 +80,7 @@ class Page play
     int textPivot;
     int time;
     Array<Directive> directives;
+    PageACS acs;
 
     Array<string> remove;
     Array<string> highlight;

@@ -66,6 +66,7 @@ extend class UZNovelHandler
                 JsonArray  charJson           = JsonArray (pageObj.get("Characters"));
                 JsonArray  removeJson         = JsonArray (pageObj.get("Remove"));
                 JsonArray  highlightJson      = JsonArray (pageObj.get("Highlight"));
+                JsonElement ACSJson           = pageObj.get("ACS");
                 
                 // BG
                 if(bgJson)
@@ -225,6 +226,24 @@ extend class UZNovelHandler
                         page.directives.push(directive);
                     }
                 }
+
+                // ACS
+                if(ACSJson)
+                {
+                    if(ACSJson is "JsonString")
+                    {
+                        page.acs.name = JsonString(ACSJson).s;
+                    }
+                    else if (ACSJson is "JsonNumber")
+                    {
+                        page.acs.index = JsonNumber(ACSJson).asInt();
+                    }
+                    else
+                    {
+                        Debug.LogError("LoadBooks() : At Page "..(j+1).." : ACS is defined but is not string nor int")
+                    }
+                }
+
                 Debug.LogDebug("LoadBook(): From \cf"..fileName.."\c-\n   Loaded Page "..(j+1)..":\n     "..page.Serialize());
                 pages.push(page);
             }
