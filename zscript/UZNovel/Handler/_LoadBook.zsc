@@ -240,7 +240,7 @@ extend class UZNovelHandler
                     }
                     else
                     {
-                        Debug.LogError("LoadBooks() : At Page "..(j+1).." : ACS is defined but is not string nor int")
+                        Debug.LogError("LoadBooks() : At Page "..(j+1).." : ACS is defined but is not string nor int");
                     }
                 }
 
