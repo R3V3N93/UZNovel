@@ -51,6 +51,17 @@ struct PageACS
             Debug.LogDebug("UZNovel : Executed script "..index)
         }
     }
+
+    string Serialize()
+    {
+        string s = "[";
+        s.AppendFormat("sound = "..name..", ");
+        s.AppendFormat("index = "..index..", ");
+        s.AppendFormat("param = ["..param[0]..", "..param[1]..", "..param[2].."]");
+        s.AppendFormat("]");
+
+        return s;
+    }
 }
 
 class Directive
@@ -101,9 +112,8 @@ class Page play
         s.AppendFormat("directives(characters) size = "..directives.Size()..", ");
         s.AppendFormat("bg = [");
         s.AppendFormat("graphic="..Texman.GetName(bg)..", IsValid() = "..(bg.IsValid() ? "true" : "false").."]");
-        //s.AppendFormat("cg = [");
-        //s.AppendFormat("graphic="..Texman.GetName(cg.graphic)..", IsValid() = "..(cg.graphic.IsValid() ? "true" : "false").."]");
-        s.AppendFormat("]]");
+        s.AppendFormat("acs= "..acs.Serialize());
+        s.AppendFormat("]");
 
         return s;
     }
