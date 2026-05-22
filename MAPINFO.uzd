@@ -1,4 +1,4 @@
 gameinfo
 {
-    AddEventHandlers = "DebugInfo", "UZNovelHandler"
+    AddEventHandlers = "DebugInfo", "UZNovelHandler", "JsonLoaderTest"
 }

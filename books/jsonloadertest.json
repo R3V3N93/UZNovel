@@ -1,0 +1,13 @@
+{
+    "Object":
+    {
+        "Number":6974,
+        "Array":["item 1", 2, 3.3],
+        "Boolean":false
+    },
+
+    "Object2":
+    {
+        "Test":true
+    }
+}

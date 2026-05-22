@@ -1,0 +1,289 @@
+struct JsonLoader
+{
+    // Load JSON within a file. return null or throw if not possible.
+    static JsonObject LoadFile(string fileName)
+    {
+        // Check if file exists
+        int lump = Wads.CheckNumForFullName(fileName);
+        if(lump == -1)
+        {
+            Debug.LogWarning("LoadFile() : Could not load json named \cf"..fileName);
+            return null;
+        }
+
+        // Check if it contains root object
+        JsonElementOrError data = JSON.parse(Wads.ReadLump(lump), false);
+		if(data is "JsonError")
+			Debug.Throw("LoadFile(): "..JsonError(data).what);
+
+        return JsonObject(JsonElement(data));
+    }
+
+    // Get an Object from an object with given name
+    static JsonObject GetObject(JsonObject from, string name, bool required = false)
+    {
+        // Get JsonElement first from name
+        JsonElement element = from.Get(name);
+        if(!element)
+        {
+            if(required)
+            {
+                Debug.Throw("GetObject() : Given Object does not contain Object \""..name.."\".");
+                return null;
+            }
+
+            return null;
+        }
+
+        JsonObject obj = JsonObject(element);
+        
+        // Check if it's actually Object
+        if(!obj)
+        {
+            string err = "GetObject() : Given Object does contain \""..name.."\", but is not Object";
+            if(required)
+            {
+                Debug.Throw(err);
+                return null;
+            }
+            Debug.LogWarning(err);
+            return null;
+        }
+
+        return obj;
+    }
+
+    // Get an Array from an object with given name
+    static JsonArray GetArray(JsonObject from, string name, bool required = false)
+    {
+        // Get JsonElement first from name
+        JsonElement element = from.Get(name);
+        if(!element)
+        {
+            if(required)
+            {
+                Debug.Throw("GetArray() : Given Object does not contain Array \""..name.."\".");
+                return null;
+            }
+
+            return null;
+        }
+
+        JsonArray arr = JsonArray(element);
+
+        // Check if it's actually Array
+        if(!arr)
+        {
+            string err = "GetArray() : Given Object does contain \""..name.."\", but is not Array";
+            if(required)
+            {
+                Debug.Throw(err);
+                return null;
+            }
+            Debug.LogWarning(err);
+            return null;
+        }
+
+        return arr;
+    }
+
+    // Get a String from an object with given name and default value
+    static String GetString(JsonObject from, string key, string defValue = "", bool required = false)
+    {
+        // Get JsonElement first from key
+        JsonElement element = from.Get(key);
+        if(!element)
+        {
+            if(required)
+            {
+                Debug.Throw("GetString() : Given Object does not contain String \""..key.."\".");
+                return "";
+            }
+
+            // if the element doesn't exist at all, return default value.
+            return defValue;
+        }
+
+        JsonString jsonElement = JsonString(element);
+        
+        // Check if the element is String
+        if(!jsonElement)
+        {
+            string err = "GetString() : Given Object does contain \""..key.."\", but is not String";
+            if(required)
+            {
+                Debug.Throw(err);
+                return "";
+            }
+
+            // if not string, log a warning and then return default value
+            Debug.LogWarning(err);
+            return defValue;
+        }
+
+        return jsonElement.s;
+    }
+
+    // Get an int from an object with given name and default value
+    static int GetInt(JsonObject from, string key, int defValue = 0, bool required = false)
+    {
+        // Get JsonElement first from key
+        JsonElement element = from.Get(key);
+        if(!element)
+        {
+            if(required)
+            {
+                Debug.Throw("GetInt() : Given Object does not contain Number \""..key.."\".");
+                return 0;
+            }
+
+            // if the element doesn't exist at all, return default value.
+            return defValue;
+        }
+
+        JsonNumber jsonElement = JsonNumber(element);
+        
+        // Check if the element is number
+        if(!jsonElement)
+        {
+            string err = "GetInt() : Given Object does contain \""..key.."\", but is not Number";
+            if(required)
+            {
+                Debug.Throw(err);
+                return 0;
+            }
+
+            // if not string, log a warning and then return default value
+            Debug.LogWarning(err);
+            return defValue;
+        }
+
+        return jsonElement.asInt();
+    }
+
+    // Get a double from an object with given name and default value
+    static double GetDouble(JsonObject from, string key, double defValue = 0.0, bool required = false)
+    {
+        // Get JsonElement first from key
+        JsonElement element = from.Get(key);
+        if(!element)
+        {
+            if(required)
+            {
+                Debug.Throw("GetDouble() : Given Object does not contain Number \""..key.."\".");
+                return 0.0;
+            }
+
+            // if the element doesn't exist at all, return default value.
+            return defValue;
+        }
+
+        JsonNumber jsonElement = JsonNumber(element);
+        
+        // Check if the element is number
+        if(!jsonElement)
+        {
+            string err = "GetDouble() : Given Object does contain \""..key.."\", but is not Number";
+            if(required)
+            {
+                Debug.Throw(err);
+                return 0.0;
+            }
+
+            // if not string, log a warning and then return default value
+            Debug.LogWarning(err);
+            return defValue;
+        }
+
+        return jsonElement.asDouble();
+    }
+
+    // Get a boolean from an object with given name and default value
+    static bool GetBool(JsonObject from, string key, bool defValue = false, bool required = false)
+    {
+        // Get JsonElement first from key
+        JsonElement element = from.Get(key);
+        if(!element)
+        {
+            if(required)
+            {
+                Debug.Throw("GetBool() : Given Object does not contain Boolean \""..key.."\".");
+                return false;
+            }
+
+            // if the element doesn't exist at all, return default value.
+            return defValue;
+        }
+
+        JsonBool jsonElement = JsonBool(element);
+        
+        // Check if the element is boolean
+        if(!jsonElement)
+        {
+            string err = "GetBool() : Given Object does contain \""..key.."\", but is not Boolean";
+            if(required)
+            {
+                Debug.Throw(err);
+                return false;
+            }
+
+            // if not string, log a warning and then return default value
+            Debug.LogWarning(err);
+            return defValue;
+        }
+
+        return jsonElement.b;
+    }
+
+    // Get a Vector2 from an object with given name
+    static Vector2 GetVector2(JsonObject from, string name, Vector2 defValue = (0,0), bool required = false)
+    {
+        // Get JsonElement first from name
+        JsonElement element = from.Get(name);
+        if(!element)
+        {
+            if(required)
+            {
+                Debug.Throw("GetVector2() : Given Object does not contain Array \""..name.."\".");
+                return null;
+            }
+
+            return null;
+        }
+
+        JsonArray arr = JsonArray(element);
+
+        // Check if it's actually Array
+        if(!arr)
+        {
+            string err = "GetArray() : Given Object does contain \""..name.."\", but is not Array";
+            if(required)
+            {
+                Debug.Throw(err);
+                return null;
+            }
+            Debug.LogWarning(err);
+            return null;
+        }
+
+        return arr;
+    }
+}
+
+class JsonLoaderTest : EventHandler
+{
+    override void OnRegister()
+    {
+        JsonObject loadedFile = JsonLoader.LoadFile("books/jsonloadertest.json");
+        if(loadedFile) Debug.LogDebug("File Loaded Succesfully"); else return;
+
+        JsonObject object1 = JsonLoader.GetObject(loadedFile, "Object", true);
+        if(object1) Debug.LogDebug("Object 1 Loaded Succesfully"); else return;
+
+        string testString = JsonLoader.GetString(object1, "String", "default", false);
+        Debug.LogDebug("Object1.String : "..testString);
+
+        JsonArray testArray = JsonLoader.GetArray(object1, "Array", true);
+        if(testArray) Debug.LogDebug("Array Loaded Succesfully"); else return;
+    }
+}
