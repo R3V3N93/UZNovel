@@ -236,6 +236,9 @@ struct JsonLoader
     }
 
     // Get a Vector2 from an object with given name
+    // Json doesn't have Vector type, however UZNovel will
+    // implicitly regard Array as vectors
+    // Thus, any values that are beyond the give dimension are ignored
     static Vector2 GetVector2(JsonObject from, string name, Vector2 defValue = (0,0), bool required = false)
     {
         // Get JsonElement first from name
@@ -245,10 +248,10 @@ struct JsonLoader
             if(required)
             {
                 Debug.Throw("GetVector2() : Given Object does not contain Array \""..name.."\".");
-                return null;
+                return (0,0);
             }
 
-            return null;
+            return defValue;
         }
 
         JsonArray arr = JsonArray(element);
@@ -256,17 +259,30 @@ struct JsonLoader
         // Check if it's actually Array
         if(!arr)
         {
-            string err = "GetArray() : Given Object does contain \""..name.."\", but is not Array";
+            string err = "GetVector2() : Given Object does contain \""..name.."\", but is not Array";
             if(required)
             {
                 Debug.Throw(err);
-                return null;
+                return (0,0);
             }
             Debug.LogWarning(err);
-            return null;
+            return defValue;
         }
 
-        return arr;
+        JsonNumber values[2] = {JsonNumber(arr.Get(0)), JsonNumber(arr.Get(1))}
+        if(!values[0] || !values[1])
+        {
+            string err = "GetVector2() : Given Vector2 does not contain numbers as values.";
+            if(required)
+            {
+                Debug.Throw(err);
+                return (0,0);
+            }
+            Debug.LogWarning(err);
+            return defValue;
+        }
+
+        return (values[0], values[1]);
     }
 }
 
